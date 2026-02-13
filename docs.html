@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NodeGuard — Documentação Completa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Vars ────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #09090b;
+      --card: #131316;
+      --surface: #1a1a1f;
+      --neon: #DC2626;
+      --neon-soft: rgba(220,38,38,.15);
+      --success: #22C55E;
+      --danger: #EF4444;
+      --warn: #F59E0B;
+      --blue: #3B82F6;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,.06);
+      --sidebar-w: 280px;
+    }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    ::selection { background: rgba(220,38,38,.3); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+    a { color: var(--neon); text-decoration: none; transition: opacity .2s; }
+    a:hover { opacity: .85; }
+
+    /* ── Header ──────────────────────────────────────────── */
+    header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(16px); background: rgba(9,9,11,.8); border-bottom: 1px solid var(--border); height: 64px; display: flex; align-items: center; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1600px; margin: 0 auto; padding: 0 24px; }
+    .logo { font-weight: 800; font-size: 1.25rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .logo .shield { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--neon); border-radius: 8px; font-size: .85rem; }
+    .header-badge { font-size: .7rem; background: var(--neon-soft); color: var(--neon); padding: 3px 10px; border-radius: 999px; font-weight: 600; border: 1px solid rgba(220,38,38,.25); }
+    .header-links { display: flex; gap: 20px; align-items: center; }
+    .header-links a { color: var(--muted); font-size: .85rem; font-weight: 500; }
+    .header-links a:hover { color: #fff; }
+    .btn-sm { background: var(--neon); color: #fff !important; padding: 7px 16px; border-radius: 8px; font-size: .8rem; font-weight: 600; }
+    .btn-sm:hover { background: #b91c1c; opacity: 1; }
+
+    /* ── Sidebar ─────────────────────────────────────────── */
+    .layout { display: flex; margin-top: 64px; }
+    aside { position: fixed; top: 64px; left: 0; width: var(--sidebar-w); height: calc(100vh - 64px); overflow-y: auto; border-right: 1px solid var(--border); background: var(--card); padding: 24px 0; z-index: 50; }
+    aside::-webkit-scrollbar { width: 4px; }
+    aside::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 2px; }
+    .sidebar-section { padding: 0 20px; margin-bottom: 24px; }
+    .sidebar-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .sidebar-link { display: flex; align-items: center; gap: 8px; padding: 7px 12px; margin: 1px 0; border-radius: 8px; font-size: .82rem; color: var(--muted); font-weight: 500; transition: all .15s; }
+    .sidebar-link:hover { background: rgba(255,255,255,.04); color: #fff; }
+    .sidebar-link.active { background: var(--neon-soft); color: var(--neon); font-weight: 600; }
+    .sidebar-icon { width: 18px; text-align: center; font-size: .85rem; flex-shrink: 0; }
+    .sidebar-divider { height: 1px; background: var(--border); margin: 16px 20px; }
+
+    /* ── Main Content ────────────────────────────────────── */
+    main { margin-left: var(--sidebar-w); flex: 1; min-height: calc(100vh - 64px); padding: 40px 48px 80px; max-width: 960px; }
+
+    /* ── Typography ───────────────────────────────────────── */
+    .doc-title { font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 8px; }
+    .doc-subtitle { font-size: 1rem; color: var(--muted); margin-bottom: 40px; }
+    h2 { font-size: 1.5rem; font-weight: 800; color: #fff; margin: 48px 0 8px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    h2:first-of-type { margin-top: 0; border-top: none; padding-top: 0; }
+    h2 .h2-icon { font-size: 1.1rem; }
+    h3 { font-size: 1.1rem; font-weight: 700; color: #fff; margin: 28px 0 8px; }
+    h4 { font-size: .95rem; font-weight: 700; color: #fff; margin: 20px 0 6px; }
+    p { color: var(--text); margin-bottom: 12px; font-size: .9rem; }
+    ul, ol { margin: 0 0 16px 20px; font-size: .9rem; color: var(--text); }
+    li { margin-bottom: 6px; }
+    strong { color: #fff; }
+
+    /* ── Code ──────────────────────────────────────────────── */
+    code { font-family: 'JetBrains Mono', monospace; font-size: .8rem; background: var(--surface); padding: 2px 7px; border-radius: 4px; color: var(--neon); }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; overflow-x: auto; margin: 12px 0 20px; position: relative; }
+    pre code { background: none; padding: 0; color: var(--text); display: block; line-height: 1.7; font-size: .78rem; }
+    .code-label { position: absolute; top: 8px; right: 12px; font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: var(--bg); padding: 2px 8px; border-radius: 4px; }
+    .code-comment { color: #64748b; }
+    .code-string { color: var(--success); }
+    .code-keyword { color: var(--blue); }
+    .code-val { color: var(--warn); }
+
+    /* ── Tables ────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 12px 0 24px; border: 1px solid var(--border); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    thead { background: rgba(255,255,255,.03); }
+    th { text-align: left; padding: 10px 14px; font-weight: 700; color: #fff; font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: rgba(255,255,255,.02); }
+    td code { font-size: .75rem; }
+
+    /* ── Badges ────────────────────────────────────────────── */
+    .method { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; letter-spacing: .02em; text-transform: uppercase; }
+    .m-get { background: rgba(34,197,94,.12); color: var(--success); }
+    .m-post { background: rgba(59,130,246,.12); color: var(--blue); }
+    .m-put { background: rgba(245,158,11,.12); color: var(--warn); }
+    .m-delete { background: rgba(239,68,68,.12); color: var(--danger); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 600; }
+    .badge-jwt { background: rgba(59,130,246,.12); color: var(--blue); }
+    .badge-token { background: rgba(245,158,11,.12); color: var(--warn); }
+    .badge-none { background: rgba(255,255,255,.06); color: var(--muted); }
+    .badge-admin { background: rgba(220,38,38,.12); color: var(--neon); }
+
+    /* ── Cards ─────────────────────────────────────────────── */
+    .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+    .info-card.warning { border-color: rgba(245,158,11,.25); background: rgba(245,158,11,.04); }
+    .info-card.danger { border-color: rgba(239,68,68,.25); background: rgba(239,68,68,.04); }
+    .info-card.success { border-color: rgba(34,197,94,.25); background: rgba(34,197,94,.04); }
+    .info-card h4 { margin-top: 0; }
+
+    /* ── Endpoint Block ───────────────────────────────────── */
+    .endpoint { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; overflow: hidden; }
+    .endpoint-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .endpoint-path { font-family: 'JetBrains Mono', monospace; font-size: .85rem; font-weight: 600; color: #fff; }
+    .endpoint-desc { font-size: .8rem; color: var(--muted); margin-left: auto; }
+    .endpoint-body { padding: 18px; }
+    .endpoint-body h4 { margin-top: 0; font-size: .85rem; }
+    .endpoint-body p { font-size: .85rem; }
+
+    /* ── Mobile ────────────────────────────────────────────── */
+    .sidebar-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; padding: 4px 10px; }
+    @media (max-width: 900px) {
+      aside { transform: translateX(-100%); transition: transform .3s; }
+      aside.open { transform: translateX(0); box-shadow: 8px 0 30px rgba(0,0,0,.5); }
+      main { margin-left: 0; padding: 28px 20px 60px; }
+      .sidebar-toggle { display: block; }
+      .doc-title { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header>
+  <div class="header-inner">
+    <div style="display:flex; align-items:center; gap:16px">
+      <button class="sidebar-toggle" onclick="document.querySelector('aside').classList.toggle('open')">☰</button>
+      <a href="landing.html" class="logo" style="color:#fff">
+        <span class="shield">🛡</span> NodeGuard
+      </a>
+      <span class="header-badge">DOCS v1.0</span>
+    </div>
+    <div class="header-links">
+      <a href="landing.html">Landing Page</a>
+      <a href="/login" class="btn-sm">Acessar Painel</a>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════ LAYOUT ══════════════ -->
+<div class="layout">
+
+<!-- ── Sidebar ── -->
+<aside>
+  <div class="sidebar-section">
+    <div class="sidebar-label">📖 Introdução</div>
+    <a href="#overview" class="sidebar-link active"><span class="sidebar-icon">📋</span> Visão Geral</a>
+    <a href="#architecture" class="sidebar-link"><span class="sidebar-icon">🏗</span> Arquitetura</a>
+    <a href="#tech-stack" class="sidebar-link"><span class="sidebar-icon">🔧</span> Stack Tecnológica</a>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">🚀 Instalação</div>
+    <a href="#requirements" class="sidebar-link"><span class="sidebar-icon">📦</span> Requisitos</a>
+    <a href="#backend-setup" class="sidebar-link"><span class="sidebar-icon">⚙</span> Backend (API)</a>
+    <a href="#frontend-setup" class="sidebar-link"><span class="sidebar-icon">🖥</span> Frontend (UI)</a>
+    <a href="#docker-setup" class="sidebar-link"><span class="sidebar-icon">🐳</span> Docker</a>
+    <a href="#agent-install" class="sidebar-link"><span class="sidebar-icon">🛡</span> Agente</a>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">⚙ Configuração</div>
+    <a href="#env-vars" class="sidebar-link"><span class="sidebar-icon">📝</span> Variáveis de Ambiente</a>
+    <a href="#auth-config" class="sidebar-link"><span class="sidebar-icon">🔒</span> Autenticação</a>
+    <a href="#notifications" class="sidebar-link"><span class="sidebar-icon">📢</span> Notificações</a>
+    <a href="#automations-config" class="sidebar-link"><span class="sidebar-icon">⚡</span> Automações</a>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">📡 API Reference</div>
+    <a href="#api-auth" class="sidebar-link"><span class="sidebar-icon">🔑</span> Auth</a>
+    <a href="#api-agents" class="sidebar-link"><span class="sidebar-icon">📡</span> Agents</a>
+    <a href="#api-servers" class="sidebar-link"><span class="sidebar-icon">🖥</span> Servers</a>
+    <a href="#api-events" class="sidebar-link"><span class="sidebar-icon">📋</span> Events</a>
+    <a href="#api-security" class="sidebar-link"><span class="sidebar-icon">🛡</span> Security</a>
+    <a href="#api-metrics" class="sidebar-link"><span class="sidebar-icon">📊</span> Metrics</a>
+    <a href="#api-traffic" class="sidebar-link"><span class="sidebar-icon">🌐</span> Traffic</a>
+    <a href="#api-alerts" class="sidebar-link"><span class="sidebar-icon">🔔</span> Alerts</a>
+    <a href="#api-automations" class="sidebar-link"><span class="sidebar-icon">⚡</span> Automations</a>
+    <a href="#api-tokens" class="sidebar-link"><span class="sidebar-icon">🔑</span> Tokens</a>
+    <a href="#api-admin" class="sidebar-link"><span class="sidebar-icon">👑</span> Admin</a>
+  </div>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-label">📘 Guias</div>
+    <a href="#guide-client" class="sidebar-link"><span class="sidebar-icon">👤</span> Guia do Cliente</a>
+    <a href="#guide-admin" class="sidebar-link"><span class="sidebar-icon">🔧</span> Guia do Admin</a>
+    <a href="#troubleshooting" class="sidebar-link"><span class="sidebar-icon">🐛</span> Troubleshooting</a>
+  </div>
+</aside>
+
+<!-- ══════════════ MAIN CONTENT ══════════════ -->
+<main>
+
+<!-- ─────────────────────────────────────────── -->
+<h1 class="doc-title">Documentação NodeGuard</h1>
+<p class="doc-subtitle">Referência técnica completa — configuração, API, guias de uso e arquitetura do sistema.</p>
+
+<!-- ═══ VISÃO GERAL ═══ -->
+<h2 id="overview"><span class="h2-icon">📋</span> Visão Geral</h2>
+<p>
+  <strong>NodeGuard</strong> é uma plataforma completa de segurança e monitoramento para servidores Linux. O sistema é composto por três componentes:
+</p>
+<ul>
+  <li><strong>Agente Go</strong> — binário leve instalado em cada servidor, envia heartbeats (CPU, RAM, disco, logins SSH, eventos) a cada 30 segundos.</li>
+  <li><strong>Backend FastAPI</strong> — API REST em Python que recebe, processa, armazena dados e executa automações (auto-ban, alertas).</li>
+  <li><strong>Frontend React</strong> — SPA dashboard em React + TypeScript + Tailwind CSS com tema dark red/black.</li>
+</ul>
+
+<div class="info-card">
+  <h4>✨ Funcionalidades Principais</h4>
+  <ul style="margin-bottom:0">
+    <li>Detecção e bloqueio automático de SSH brute-force</li>
+    <li>Métricas em tempo real (CPU, RAM, disco, conexões)</li>
+    <li>Tráfego de rede por interface</li>
+    <li>Motor de automações com regras personalizáveis</li>
+    <li>Central de alertas com severidade (critical/warning/info)</li>
+    <li>Análise forense — busca em todos os eventos</li>
+    <li>Log stream centralizado ao vivo</li>
+    <li>Multi-tenant — isolamento total entre clientes</li>
+    <li>Autenticação JWT + tokens de agente seguros</li>
+    <li>Painel de administração (superadmin)</li>
+  </ul>
+</div>
+
+<!-- ═══ ARQUITETURA ═══ -->
+<h2 id="architecture"><span class="h2-icon">🏗</span> Arquitetura</h2>
+<p>O fluxo de dados segue uma direção clara:</p>
+
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│  <span class="code-comment">Servidor Linux (N instâncias)</span>                             │
+│  ┌──────────────────────┐                                   │
+│  │ 🛡 NodeGuard Agent   │  ← Go binary + systemd            │
+│  │  • auth.log parser   │                                   │
+│  │  • system metrics    │                                   │
+│  │  • network stats     │                                   │
+│  └─────────┬────────────┘                                   │
+└────────────┼────────────────────────────────────────────────┘
+             │ POST /api/v1/agents/heartbeat
+             │ Header: X-Agent-Token: ng_xxxxx
+             ▼
+┌─────────────────────────────────────────────────────────────┐
+│  <span class="code-comment">Backend (FastAPI + Python)</span>                                 │
+│  ┌──────────────┐  ┌───────────────┐  ┌──────────────────┐ │
+│  │  Routers     │  │ Automation    │  │   Data Store     │ │
+│  │  (11 módulos)│→ │ Engine        │→ │   (in-memory)    │ │
+│  └──────────────┘  └───────────────┘  └──────────────────┘ │
+│  JWT Auth · Rate Limiting · Prometheus                      │
+└─────────────────────────────┬───────────────────────────────┘
+                              │ REST API + JWT Bearer
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│  <span class="code-comment">Frontend (React + Vite + TypeScript)</span>                       │
+│  Dashboard · Servidores · Segurança · Métricas · Logs       │
+│  Alertas · Automações · Forense · Tráfego · Admin           │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+
+<!-- ═══ STACK ═══ -->
+<h2 id="tech-stack"><span class="h2-icon">🔧</span> Stack Tecnológica</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Componente</th><th>Tecnologia</th><th>Versão</th></tr></thead>
+  <tbody>
+    <tr><td>Agente</td><td>Go</td><td>1.21+</td></tr>
+    <tr><td>Backend</td><td>Python + FastAPI + Uvicorn</td><td>3.12+ / 0.115 / 0.32</td></tr>
+    <tr><td>Frontend</td><td>React + TypeScript + Vite + Tailwind CSS</td><td>18.3 / 5.7 / 6.4 / 3.4</td></tr>
+    <tr><td>Auth</td><td>JWT (HS256) via python-jose</td><td>—</td></tr>
+    <tr><td>Hashing</td><td>PBKDF2-HMAC-SHA256 (260k iter.)</td><td>—</td></tr>
+    <tr><td>Métricas</td><td>prometheus-client</td><td>—</td></tr>
+    <tr><td>Container</td><td>Docker + docker-compose</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═══ REQUISITOS ═══ -->
+<h2 id="requirements"><span class="h2-icon">📦</span> Requisitos</h2>
+<h4>Backend</h4>
+<ul>
+  <li>Python 3.12 ou superior</li>
+  <li>pip (gerenciador de pacotes Python)</li>
+</ul>
+<h4>Frontend</h4>
+<ul>
+  <li>Node.js 18+ e npm 9+</li>
+</ul>
+<h4>Agente</h4>
+<ul>
+  <li>Servidor Linux (Ubuntu 20.04+, Debian 11+, CentOS 8+, etc.)</li>
+  <li>systemd para gerenciamento do serviço</li>
+  <li>Acesso a <code>/var/log/auth.log</code> (ou <code>/var/log/secure</code>)</li>
+</ul>
+
+<!-- ═══ BACKEND SETUP ═══ -->
+<h2 id="backend-setup"><span class="h2-icon">⚙</span> Instalação do Backend</h2>
+<h4>1. Clone e entre no diretório</h4>
+<pre><code><span class="code-comment"># Clone o repositório</span>
+git clone https://github.com/seu-usuario/nodeguard.git
+cd nodeguard/backend</code></pre>
+
+<h4>2. Crie um ambiente virtual (recomendado)</h4>
+<pre><code>python -m venv venv
+source venv/bin/activate  <span class="code-comment"># Linux/Mac</span>
+venv\Scripts\activate     <span class="code-comment"># Windows</span></code></pre>
+
+<h4>3. Instale dependências</h4>
+<pre><code>pip install -r requirements.txt</code></pre>
+
+<h4>4. Configure variáveis de ambiente</h4>
+<pre><code><span class="code-comment"># Crie o arquivo .env na pasta backend/</span>
+cp .env.example .env
+<span class="code-comment"># Edite com suas configurações (ver seção Variáveis de Ambiente)</span></code></pre>
+
+<h4>5. Inicie o servidor</h4>
+<pre><code><span class="code-comment"># Desenvolvimento (com auto-reload)</span>
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+<span class="code-comment"># Produção (com workers)</span>
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4</code></pre>
+
+<div class="info-card success">
+  <h4>✅ Verificação</h4>
+  <p style="margin:0">Acesse <code>http://localhost:8000/health</code> — deve retornar <code>{"status":"ok","timestamp":"..."}</code></p>
+</div>
+
+<!-- ═══ FRONTEND SETUP ═══ -->
+<h2 id="frontend-setup"><span class="h2-icon">🖥</span> Instalação do Frontend</h2>
+<pre><code>cd frontend
+npm install
+npm run dev       <span class="code-comment"># Desenvolvimento — http://localhost:5173</span></code></pre>
+
+<h4>Build para Produção</h4>
+<pre><code>npm run build     <span class="code-comment"># Gera pasta dist/</span>
+
+<span class="code-comment"># Servir com Nginx:</span>
+server {
+    listen 80;
+    root /path/to/frontend/dist;
+    location / { try_files $uri /index.html; }
+    location /api/ { proxy_pass http://127.0.0.1:8000; }
+}</code></pre>
+
+<div class="info-card">
+  <h4>🔗 Proxy de Desenvolvimento</h4>
+  <p style="margin:0">O Vite já está configurado para fazer proxy de <code>/api</code> para <code>http://localhost:8000</code> automaticamente via <code>vite.config.ts</code>.</p>
+</div>
+
+<!-- ═══ DOCKER ═══ -->
+<h2 id="docker-setup"><span class="h2-icon">🐳</span> Deploy com Docker</h2>
+<pre><code><span class="code-comment"># Na raiz do projeto</span>
+docker compose up --build -d
+
+<span class="code-comment"># Ver logs</span>
+docker compose logs -f
+
+<span class="code-comment"># Parar</span>
+docker compose down</code></pre>
+
+<!-- ═══ AGENT INSTALL ═══ -->
+<h2 id="agent-install"><span class="h2-icon">🛡</span> Instalação do Agente</h2>
+<p>O agente é instalado nos servidores Linux que você deseja monitorar. Primeiro, gere um token no painel.</p>
+
+<h4>One-liner (recomendado)</h4>
+<pre><code>curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- \
+  --token <span class="code-string">SEU_TOKEN_AQUI</span> \
+  --api-url <span class="code-string">http://seu-backend:8000</span></code></pre>
+
+<h4>Verificar status</h4>
+<pre><code>sudo systemctl status node-guardian-agent
+sudo journalctl -u node-guardian-agent -f  <span class="code-comment"># logs em tempo real</span></code></pre>
+
+<h4>Reiniciar / Parar</h4>
+<pre><code>sudo systemctl restart node-guardian-agent
+sudo systemctl stop node-guardian-agent</code></pre>
+
+<h4>Arquivo de configuração</h4>
+<pre><code><span class="code-comment"># /etc/node-guardian/agent.yaml</span>
+api_url: <span class="code-string">"http://seu-backend:8000"</span>
+token: <span class="code-string">"ng_xxxxxxxxxxxxxxxxxxxxxxxxxx"</span>
+heartbeat_interval: <span class="code-val">30</span>   <span class="code-comment"># segundos</span>
+log_file: <span class="code-string">"/var/log/auth.log"</span></code></pre>
+
+<!-- ═══ ENV VARS ═══ -->
+<h2 id="env-vars"><span class="h2-icon">📝</span> Variáveis de Ambiente</h2>
+<p>Crie um arquivo <code>.env</code> na pasta <code>backend/</code>. Todas as variáveis são opcionais (possuem defaults).</p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Variável</th><th>Tipo</th><th>Default</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td><code>APP_NAME</code></td><td>str</td><td><code>"Node Guardian Core API"</code></td><td>Nome da aplicação</td></tr>
+    <tr><td><code>JWT_SECRET</code></td><td>str</td><td><code>"change_me_in_production"</code></td><td>Chave secreta para assinatura JWT</td></tr>
+    <tr><td><code>JWT_ALGORITHM</code></td><td>str</td><td><code>HS256</code></td><td>Algoritmo JWT</td></tr>
+    <tr><td><code>ACCESS_TOKEN_EXPIRE_MINUTES</code></td><td>int</td><td><code>60</code></td><td>Validade do token JWT (minutos)</td></tr>
+    <tr><td><code>API_RATE_LIMIT_PER_MINUTE</code></td><td>int</td><td><code>120</code></td><td>Limite de requests por minuto por IP</td></tr>
+    <tr><td><code>DATABASE_URL</code></td><td>str</td><td><code>postgresql+psycopg://...</code></td><td>URL de conexão ao banco (futuro)</td></tr>
+    <tr><td><code>REDIS_URL</code></td><td>str</td><td><code>redis://localhost:6379/0</code></td><td>URL do Redis (futuro)</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4>Notificações (opcionais)</h4>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Variável</th><th>Descrição</th></tr></thead>
+  <tbody>
+    <tr><td><code>DISCORD_WEBHOOK_URL</code></td><td>URL do webhook Discord</td></tr>
+    <tr><td><code>SLACK_WEBHOOK_URL</code></td><td>URL do webhook Slack</td></tr>
+    <tr><td><code>TELEGRAM_BOT_TOKEN</code></td><td>Token do bot Telegram</td></tr>
+    <tr><td><code>TELEGRAM_CHAT_ID</code></td><td>ID do chat Telegram</td></tr>
+    <tr><td><code>SMTP_HOST</code></td><td>Servidor SMTP para emails</td></tr>
+    <tr><td><code>SMTP_PORT</code></td><td>Porta SMTP (default: 587)</td></tr>
+    <tr><td><code>SMTP_USER</code></td><td>Usuário SMTP</td></tr>
+    <tr><td><code>SMTP_PASS</code></td><td>Senha SMTP</td></tr>
+    <tr><td><code>SMTP_FROM</code></td><td>Endereço remetente</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="info-card danger">
+  <h4>⚠️ Segurança</h4>
+  <p style="margin:0">Altere <code>JWT_SECRET</code> para uma string aleatória forte em produção! O default é inseguro. Use: <code>python -c "import secrets; print(secrets.token_hex(32))"</code></p>
+</div>
+
+<!-- ═══ AUTH CONFIG ═══ -->
+<h2 id="auth-config"><span class="h2-icon">🔒</span> Autenticação</h2>
+<h4>JWT (Usuários)</h4>
+<p>O sistema usa <strong>OAuth2 Bearer Token</strong> com JWT assinado via HS256. O payload do token contém:</p>
+<pre><code>{
+  <span class="code-string">"sub"</span>: <span class="code-string">"user@email.com"</span>,
+  <span class="code-string">"uid"</span>: <span class="code-val">1</span>,
+  <span class="code-string">"role"</span>: <span class="code-string">"user"</span>,
+  <span class="code-string">"nome"</span>: <span class="code-string">"João Silva"</span>,
+  <span class="code-string">"exp"</span>: <span class="code-val">1739540400</span>
+}</code></pre>
+
+<h4>Hashing de Senhas</h4>
+<p>Algoritmo: <strong>PBKDF2-HMAC-SHA256</strong> com 260.000 iterações e salt aleatório de 16 bytes (hex). Formato armazenado: <code>salt$hex_digest</code>.</p>
+
+<h4>Tokens de Agente</h4>
+<p>Formato: <code>ng_</code> + 28 caracteres hex aleatórios. Enviados via header <code>X-Agent-Token</code>. Cada token é vinculado a um usuário específico.</p>
+
+<h4>Conta Superadmin</h4>
+<div class="info-card warning">
+  <h4>🔑 Credenciais Padrão</h4>
+  <p>O sistema cria automaticamente no primeiro boot:</p>
+  <pre style="margin:8px 0 0"><code>Email: <span class="code-string">admin@nodeguard.io</span>
+Senha: <span class="code-string">admin123</span></code></pre>
+  <p style="margin:8px 0 0; color:var(--danger)"><strong>Altere a senha imediatamente após o primeiro login!</strong></p>
+</div>
+
+<!-- ═══ NOTIFICATIONS ═══ -->
+<h2 id="notifications"><span class="h2-icon">📢</span> Notificações</h2>
+<p>O sistema suporta notificações via múltiplos canais. Configure as variáveis de ambiente correspondentes:</p>
+<ul>
+  <li><strong>Discord</strong> — Preencha <code>DISCORD_WEBHOOK_URL</code></li>
+  <li><strong>Slack</strong> — Preencha <code>SLACK_WEBHOOK_URL</code></li>
+  <li><strong>Telegram</strong> — Preencha <code>TELEGRAM_BOT_TOKEN</code> e <code>TELEGRAM_CHAT_ID</code></li>
+  <li><strong>Email (SMTP)</strong> — Preencha <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>, <code>SMTP_FROM</code></li>
+</ul>
+
+<!-- ═══ AUTOMATIONS CONFIG ═══ -->
+<h2 id="automations-config"><span class="h2-icon">⚡</span> Automações</h2>
+<p>O motor de automações executa regras em tempo real a cada evento recebido. O sistema vem com 5 regras globais pré-configuradas:</p>
+
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Regra</th><th>Condição</th><th>Ação</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td><strong>SSH Brute-Force Auto Ban</strong></td><td>≥ 5 falhas SSH em 5 min</td><td>Banir IP por 24h</td><td>🟢 Ativo</td></tr>
+    <tr><td><strong>Port Scan Detection</strong></td><td>Port scan detectado</td><td>Banir IP por 48h + Alerta</td><td>🟢 Ativo</td></tr>
+    <tr><td><strong>CPU Critical Alert</strong></td><td>CPU > 95%</td><td>Alerta crítico</td><td>🟢 Ativo</td></tr>
+    <tr><td><strong>Disk Space Warning</strong></td><td>Disco > 85%</td><td>Alerta warning</td><td>🔴 Inativo</td></tr>
+    <tr><td><strong>DDoS Mitigation</strong></td><td>> 1000 conns/min do mesmo IP</td><td>Rate limit + Banir IP 1h</td><td>🟢 Ativo</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>Regras podem ser ativadas/desativadas pelo painel. Clientes também podem criar regras personalizadas via API.</p>
+
+<h4>Como funciona o brute-force detection</h4>
+<ol>
+  <li>O agente parseia <code>/var/log/auth.log</code> e envia tentativas de login via heartbeat.</li>
+  <li>O backend registra cada tentativa e gera um evento <code>ssh_login_failed</code>.</li>
+  <li>O motor de automações verifica: se o IP teve ≥ 5 falhas em janela de 5 minutos → executa ban automático + alerta crítico.</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     API REFERENCE
+     ═══════════════════════════════════════════════════════════════ -->
+
+<h2 id="api-auth"><span class="h2-icon">🔑</span> API — Auth</h2>
+<p>Prefixo: <code>/api/v1/auth</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-post">POST</span>
+    <span class="endpoint-path">/auth/register</span>
+    <span class="badge badge-none">Público</span>
+    <span class="endpoint-desc">Criar nova conta</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Request Body</h4>
+    <pre><code>{
+  <span class="code-string">"nome"</span>: <span class="code-string">"João Silva"</span>,
+  <span class="code-string">"email"</span>: <span class="code-string">"joao@empresa.com"</span>,
+  <span class="code-string">"password"</span>: <span class="code-string">"minhasenhaforte"</span>
+}</code></pre>
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"id"</span>: <span class="code-val">2</span>,
+  <span class="code-string">"nome"</span>: <span class="code-string">"João Silva"</span>,
+  <span class="code-string">"email"</span>: <span class="code-string">"joao@empresa.com"</span>,
+  <span class="code-string">"role"</span>: <span class="code-string">"user"</span>,
+  <span class="code-string">"avatar_url"</span>: <span class="code-val">null</span>,
+  <span class="code-string">"criado_em"</span>: <span class="code-string">"2026-02-13T14:00:00Z"</span>
+}</code></pre>
+    <p><strong>Erros:</strong> <code>409</code> se email já existe.</p>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-post">POST</span>
+    <span class="endpoint-path">/auth/token</span>
+    <span class="badge badge-none">Público</span>
+    <span class="endpoint-desc">Login (obter JWT)</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Request Body</h4>
+    <pre><code>{
+  <span class="code-string">"email"</span>: <span class="code-string">"joao@empresa.com"</span>,
+  <span class="code-string">"password"</span>: <span class="code-string">"minhasenhaforte"</span>
+}</code></pre>
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"access_token"</span>: <span class="code-string">"eyJhbGciOiJIUzI1NiIs..."</span>,
+  <span class="code-string">"token_type"</span>: <span class="code-string">"bearer"</span>
+}</code></pre>
+    <p><strong>Erros:</strong> <code>401</code> credenciais inválidas · <code>403</code> conta desativada.</p>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/auth/me</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Perfil do usuário logado</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"id"</span>: <span class="code-val">2</span>,  <span class="code-string">"nome"</span>: <span class="code-string">"João Silva"</span>,  <span class="code-string">"email"</span>: <span class="code-string">"joao@empresa.com"</span>,
+  <span class="code-string">"role"</span>: <span class="code-string">"user"</span>,  <span class="code-string">"avatar_url"</span>: <span class="code-val">null</span>
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-put">PUT</span>
+    <span class="endpoint-path">/auth/me</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Atualizar perfil</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Request Body</h4>
+    <pre><code>{
+  <span class="code-string">"nome"</span>: <span class="code-string">"João M. Silva"</span>,
+  <span class="code-string">"email"</span>: <span class="code-string">"joao.novo@empresa.com"</span>,
+  <span class="code-string">"avatar_url"</span>: <span class="code-string">"https://..."</span>
+}</code></pre>
+    <p>Todos os campos são opcionais. <strong>Erros:</strong> <code>409</code> se email já em uso.</p>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-put">PUT</span>
+    <span class="endpoint-path">/auth/me/password</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Alterar senha</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Request Body</h4>
+    <pre><code>{
+  <span class="code-string">"current_password"</span>: <span class="code-string">"senhaatual"</span>,
+  <span class="code-string">"new_password"</span>: <span class="code-string">"novaSenhaForte123"</span>
+}</code></pre>
+    <p><strong>Erros:</strong> <code>400</code> se senha atual incorreta.</p>
+  </div>
+</div>
+
+<!-- ═══ AGENTS ═══ -->
+<h2 id="api-agents"><span class="h2-icon">📡</span> API — Agents</h2>
+<p>Prefixo: <code>/api/v1/agents</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-post">POST</span>
+    <span class="endpoint-path">/agents/heartbeat</span>
+    <span class="badge badge-token">X-Agent-Token</span>
+    <span class="endpoint-desc">Enviar heartbeat do agente</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Este é o endpoint principal do agente. Envia métricas, login attempts e eventos a cada 30s.</p>
+    <h4>Header</h4>
+    <pre><code>X-Agent-Token: ng_a1b2c3d4e5f6...</code></pre>
+    <h4>Request Body (HeartbeatPayload)</h4>
+    <pre><code>{
+  <span class="code-string">"hostname"</span>: <span class="code-string">"srv-prod-01"</span>,
+  <span class="code-string">"ip_publico"</span>: <span class="code-string">"203.0.113.10"</span>,
+  <span class="code-string">"os_info"</span>: <span class="code-string">"Ubuntu 22.04.3 LTS"</span>,
+  <span class="code-string">"cpu"</span>: <span class="code-val">32.5</span>,
+  <span class="code-string">"ram"</span>: <span class="code-val">61.2</span>,
+  <span class="code-string">"disk"</span>: <span class="code-val">49.8</span>,
+  <span class="code-string">"uptime"</span>: <span class="code-string">"45d 12h 30m"</span>,
+  <span class="code-string">"conns"</span>: <span class="code-val">120</span>,
+  <span class="code-string">"open_ports"</span>: [<span class="code-val">22</span>, <span class="code-val">80</span>, <span class="code-val">443</span>, <span class="code-val">3306</span>],
+  <span class="code-string">"interfaces"</span>: [
+    { <span class="code-string">"name"</span>: <span class="code-string">"eth0"</span>, <span class="code-string">"bytes_in"</span>: <span class="code-val">134217728</span>, <span class="code-string">"bytes_out"</span>: <span class="code-val">89128960</span>,
+      <span class="code-string">"packets_in"</span>: <span class="code-val">142000</span>, <span class="code-string">"packets_out"</span>: <span class="code-val">98000</span>, <span class="code-string">"status"</span>: <span class="code-string">"up"</span> }
+  ],
+  <span class="code-string">"login_attempts"</span>: [
+    { <span class="code-string">"user"</span>: <span class="code-string">"root"</span>, <span class="code-string">"ip"</span>: <span class="code-string">"203.0.113.14"</span>, <span class="code-string">"method"</span>: <span class="code-string">"SSH"</span>, <span class="code-string">"success"</span>: <span class="code-val">false</span> }
+  ],
+  <span class="code-string">"events"</span>: [
+    { <span class="code-string">"tipo"</span>: <span class="code-string">"port_scan"</span>, <span class="code-string">"severidade"</span>: <span class="code-string">"critical"</span>,
+      <span class="code-string">"mensagem"</span>: <span class="code-string">"Port scan from 192.0.2.50"</span>, <span class="code-string">"origem_ip"</span>: <span class="code-string">"192.0.2.50"</span> }
+  ]
+}</code></pre>
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"status"</span>: <span class="code-string">"ok"</span>,
+  <span class="code-string">"server_id"</span>: <span class="code-val">1</span>,
+  <span class="code-string">"events_processed"</span>: <span class="code-val">1</span>,
+  <span class="code-string">"login_attempts_processed"</span>: <span class="code-val">1</span>
+}</code></pre>
+    <div class="info-card">
+      <p style="margin:0"><strong>Processamento automático:</strong> Ao receber o heartbeat, o backend atualiza métricas do servidor, verifica regras de CPU/disco, registra login attempts (que disparam detecção de brute-force), e processa eventos (que disparam regras de automação).</p>
+    </div>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/agents</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Listar agentes/servidores do usuário</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Response <code>200</code></h4>
+    <pre><code>{ <span class="code-string">"items"</span>: [ { <span class="code-string">"id"</span>: <span class="code-val">1</span>, <span class="code-string">"hostname"</span>: <span class="code-string">"srv-prod-01"</span>, ... } ] }</code></pre>
+  </div>
+</div>
+
+<!-- ═══ SERVERS ═══ -->
+<h2 id="api-servers"><span class="h2-icon">🖥</span> API — Servers</h2>
+<p>Prefixo: <code>/api/v1/servers</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/servers</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Listar servidores</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"items"</span>: [{
+    <span class="code-string">"id"</span>: <span class="code-val">1</span>, <span class="code-string">"hostname"</span>: <span class="code-string">"srv-prod-01"</span>, <span class="code-string">"ip_publico"</span>: <span class="code-string">"203.0.113.10"</span>,
+    <span class="code-string">"os_info"</span>: <span class="code-string">"Ubuntu 22.04"</span>, <span class="code-string">"cpu"</span>: <span class="code-val">32.5</span>, <span class="code-string">"ram"</span>: <span class="code-val">61.2</span>, <span class="code-string">"disk"</span>: <span class="code-val">49.8</span>,
+    <span class="code-string">"uptime"</span>: <span class="code-string">"45d 12h"</span>, <span class="code-string">"conns"</span>: <span class="code-val">120</span>, <span class="code-string">"open_ports"</span>: [<span class="code-val">22</span>,<span class="code-val">80</span>,<span class="code-val">443</span>],
+    <span class="code-string">"status"</span>: <span class="code-string">"online"</span>, <span class="code-string">"ultimo_heartbeat"</span>: <span class="code-string">"2026-02-13T14:23:00Z"</span>
+  }]
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/servers/stats</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Estatísticas do Dashboard</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"ataques_detectados"</span>: <span class="code-val">12</span>,
+  <span class="code-string">"ips_banidos"</span>: <span class="code-val">3</span>,
+  <span class="code-string">"servidores_online"</span>: <span class="code-val">4</span>,
+  <span class="code-string">"servidores_total"</span>: <span class="code-val">5</span>,
+  <span class="code-string">"alertas_ativos"</span>: <span class="code-val">2</span>,
+  <span class="code-string">"cpu_medio"</span>: <span class="code-val">29.3</span>,
+  <span class="code-string">"ram_medio"</span>: <span class="code-val">57.1</span>,
+  <span class="code-string">"disco_medio"</span>: <span class="code-val">45.8</span>
+}</code></pre>
+  </div>
+</div>
+
+<!-- ═══ EVENTS ═══ -->
+<h2 id="api-events"><span class="h2-icon">📋</span> API — Events</h2>
+<p>Prefixo: <code>/api/v1/events</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/events</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Listar eventos</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Query Parameters</h4>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Param</th><th>Tipo</th><th>Default</th><th>Descrição</th></tr></thead>
+      <tbody>
+        <tr><td><code>limit</code></td><td>int</td><td>50</td><td>Máximo de resultados (1-500)</td></tr>
+        <tr><td><code>tipo</code></td><td>str</td><td>—</td><td>Filtrar por tipo (ex: <code>ssh_login_failed</code>)</td></tr>
+        <tr><td><code>severidade</code></td><td>str</td><td>—</td><td>Filtrar por severidade (<code>critical</code>, <code>warning</code>, <code>info</code>)</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"items"</span>: [{
+    <span class="code-string">"id"</span>: <span class="code-val">42</span>, <span class="code-string">"hostname"</span>: <span class="code-string">"srv-prod-01"</span>,
+    <span class="code-string">"tipo"</span>: <span class="code-string">"ssh_login_failed"</span>, <span class="code-string">"severidade"</span>: <span class="code-string">"warning"</span>,
+    <span class="code-string">"mensagem"</span>: <span class="code-string">"Failed login as 'root' from 203.0.113.14"</span>,
+    <span class="code-string">"origem_ip"</span>: <span class="code-string">"203.0.113.14"</span>,
+    <span class="code-string">"criado_em"</span>: <span class="code-string">"2026-02-13T14:23:01Z"</span>
+  }],
+  <span class="code-string">"total"</span>: <span class="code-val">42</span>
+}</code></pre>
+  </div>
+</div>
+
+<!-- ═══ SECURITY ═══ -->
+<h2 id="api-security"><span class="h2-icon">🛡</span> API — Security</h2>
+<p>Prefixo: <code>/api/v1/security</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/security/login-attempts</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Tentativas de login</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Query: <code>limit</code> (int, 1-500, default 50)</h4>
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"items"</span>: [{
+    <span class="code-string">"id"</span>: <span class="code-val">1</span>, <span class="code-string">"hostname"</span>: <span class="code-string">"srv-prod-01"</span>,
+    <span class="code-string">"user"</span>: <span class="code-string">"root"</span>, <span class="code-string">"origem_ip"</span>: <span class="code-string">"203.0.113.14"</span>,
+    <span class="code-string">"method"</span>: <span class="code-string">"SSH"</span>, <span class="code-string">"success"</span>: <span class="code-val">false</span>,
+    <span class="code-string">"criado_em"</span>: <span class="code-string">"2026-02-13T14:23:01Z"</span>
+  }],
+  <span class="code-string">"stats"</span>: {
+    <span class="code-string">"total"</span>: <span class="code-val">342</span>,
+    <span class="code-string">"blocked"</span>: <span class="code-val">338</span>,   <span class="code-comment">// falhas</span>
+    <span class="code-string">"suspicious"</span>: <span class="code-val">4</span>  <span class="code-comment">// sucesso como root/admin</span>
+  }
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/security/banned-ips</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Listar IPs banidos</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"items"</span>: [{
+    <span class="code-string">"id"</span>: <span class="code-val">1</span>, <span class="code-string">"ip"</span>: <span class="code-string">"203.0.113.14"</span>, <span class="code-string">"hostname"</span>: <span class="code-string">"srv-prod-01"</span>,
+    <span class="code-string">"motivo"</span>: <span class="code-string">"SSH brute-force (5 tentativas)"</span>,
+    <span class="code-string">"origem"</span>: <span class="code-string">"Automático"</span>, <span class="code-string">"expira"</span>: <span class="code-string">"24h"</span>, <span class="code-string">"ativo"</span>: <span class="code-val">true</span>
+  }]
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-post">POST</span>
+    <span class="endpoint-path">/security/banned-ips</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Banir IP manualmente</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Request Body</h4>
+    <pre><code>{
+  <span class="code-string">"servidor_id"</span>: <span class="code-val">1</span>,
+  <span class="code-string">"ip"</span>: <span class="code-string">"192.0.2.100"</span>,
+  <span class="code-string">"motivo"</span>: <span class="code-string">"Atividade suspeita"</span>,
+  <span class="code-string">"origem"</span>: <span class="code-string">"Manual"</span>
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-delete">DELETE</span>
+    <span class="endpoint-path">/security/banned-ips/{ip}</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Desbanir IP</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Path param: o endereço IP a desbanir. <strong>Erros:</strong> <code>404</code> se não encontrado.</p>
+    <h4>Response <code>200</code></h4>
+    <pre><code>{ <span class="code-string">"unbanned"</span>: <span class="code-string">"192.0.2.100"</span> }</code></pre>
+  </div>
+</div>
+
+<!-- ═══ METRICS ═══ -->
+<h2 id="api-metrics"><span class="h2-icon">📊</span> API — Metrics</h2>
+<p>Prefixo: <code>/api/v1/metrics</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/metrics</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Métricas de servidores</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"items"</span>: [{
+    <span class="code-string">"servidor_id"</span>: <span class="code-val">1</span>, <span class="code-string">"hostname"</span>: <span class="code-string">"srv-prod-01"</span>,
+    <span class="code-string">"cpu"</span>: <span class="code-val">32.5</span>, <span class="code-string">"ram"</span>: <span class="code-val">61.2</span>, <span class="code-string">"disk"</span>: <span class="code-val">49.8</span>,
+    <span class="code-string">"conns"</span>: <span class="code-val">120</span>, <span class="code-string">"open_ports"</span>: <span class="code-val">4</span>
+  }]
+}</code></pre>
+    <p>Retorna apenas servidores com status <code>"online"</code>. <code>open_ports</code> é a contagem (não a lista).</p>
+  </div>
+</div>
+
+<div class="info-card">
+  <h4>📈 Prometheus</h4>
+  <p style="margin:0">Métricas Prometheus estão disponíveis em <code>GET /metrics/prometheus</code> (sem autenticação). Inclui <code>node_guardian_http_requests_total</code> e <code>node_guardian_active_alerts</code>.</p>
+</div>
+
+<!-- ═══ TRAFFIC ═══ -->
+<h2 id="api-traffic"><span class="h2-icon">🌐</span> API — Traffic</h2>
+<p>Prefixo: <code>/api/v1/traffic</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/traffic</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Tráfego de rede</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"items"</span>: [{
+    <span class="code-string">"hostname"</span>: <span class="code-string">"srv-prod-01"</span>, <span class="code-string">"interface"</span>: <span class="code-string">"eth0"</span>,
+    <span class="code-string">"bytes_in"</span>: <span class="code-val">134217728</span>, <span class="code-string">"bytes_out"</span>: <span class="code-val">89128960</span>,
+    <span class="code-string">"packets_in"</span>: <span class="code-val">142000</span>, <span class="code-string">"packets_out"</span>: <span class="code-val">98000</span>,
+    <span class="code-string">"status"</span>: <span class="code-string">"up"</span>
+  }],
+  <span class="code-string">"total_in"</span>: <span class="code-val">134217728</span>,
+  <span class="code-string">"total_out"</span>: <span class="code-val">89128960</span>
+}</code></pre>
+  </div>
+</div>
+
+<!-- ═══ ALERTS ═══ -->
+<h2 id="api-alerts"><span class="h2-icon">🔔</span> API — Alerts</h2>
+<p>Prefixo: <code>/api/v1/alerts</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/alerts</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Listar alertas</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Query Parameters</h4>
+    <div class="table-wrap">
+    <table>
+      <thead><tr><th>Param</th><th>Tipo</th><th>Default</th><th>Descrição</th></tr></thead>
+      <tbody>
+        <tr><td><code>status</code></td><td>str</td><td>—</td><td>Filtrar: <code>ativo</code> ou <code>resolvido</code></td></tr>
+        <tr><td><code>limit</code></td><td>int</td><td>50</td><td>Máximo de resultados (1-500)</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"items"</span>: [{
+    <span class="code-string">"id"</span>: <span class="code-val">1</span>, <span class="code-string">"hostname"</span>: <span class="code-string">"srv-prod-01"</span>,
+    <span class="code-string">"titulo"</span>: <span class="code-string">"SSH Brute-Force detectado de 203.0.113.14"</span>,
+    <span class="code-string">"severidade"</span>: <span class="code-string">"critical"</span>,
+    <span class="code-string">"mensagem"</span>: <span class="code-string">"IP fez 5 tentativas em 5 min"</span>,
+    <span class="code-string">"status"</span>: <span class="code-string">"ativo"</span>,
+    <span class="code-string">"criado_em"</span>: <span class="code-string">"2026-02-13T14:22:49Z"</span>
+  }],
+  <span class="code-string">"total"</span>: <span class="code-val">1</span>
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-put">PUT</span>
+    <span class="endpoint-path">/alerts/{alert_id}/resolve</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Resolver alerta</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Path param: <code>alert_id</code> (int). <strong>Erros:</strong> <code>404</code> se não encontrado ou não pertence ao usuário.</p>
+    <h4>Response <code>200</code></h4>
+    <pre><code>{ <span class="code-string">"resolved"</span>: <span class="code-val">true</span> }</code></pre>
+  </div>
+</div>
+
+<!-- ═══ AUTOMATIONS ═══ -->
+<h2 id="api-automations"><span class="h2-icon">⚡</span> API — Automations</h2>
+<p>Prefixo: <code>/api/v1/automations</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/automations</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Listar regras</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Retorna regras globais (<code>usuario_id=null</code>) + regras do usuário logado.</p>
+    <h4>Response <code>200</code></h4>
+    <pre><code>{
+  <span class="code-string">"items"</span>: [{
+    <span class="code-string">"id"</span>: <span class="code-val">1</span>, <span class="code-string">"nome"</span>: <span class="code-string">"SSH Brute-Force Auto Ban"</span>,
+    <span class="code-string">"condicao"</span>: <span class="code-string">"ssh_login_failed >= 5 in 5min"</span>,
+    <span class="code-string">"acao"</span>: <span class="code-string">"Banir IP por 24h"</span>,
+    <span class="code-string">"ativo"</span>: <span class="code-val">true</span>
+  }]
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-post">POST</span>
+    <span class="endpoint-path">/automations/rules</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Criar regra personalizada</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Request Body (RuleIn)</h4>
+    <pre><code>{
+  <span class="code-string">"nome"</span>: <span class="code-string">"My Custom Rule"</span>,
+  <span class="code-string">"condicao"</span>: <span class="code-string">"ssh_login_failed >= 3 in 2min"</span>,
+  <span class="code-string">"condicao_tipo"</span>: <span class="code-string">"ssh_login_failed"</span>,
+  <span class="code-string">"condicao_threshold"</span>: <span class="code-val">3</span>,
+  <span class="code-string">"acao"</span>: <span class="code-string">"Banir IP por 48h"</span>,
+  <span class="code-string">"acao_type"</span>: <span class="code-string">"ban_ip"</span>,
+  <span class="code-string">"acao_duration"</span>: <span class="code-string">"48h"</span>
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-put">PUT</span>
+    <span class="endpoint-path">/automations/{rule_id}/toggle</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Ativar/desativar regra</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Response <code>200</code></h4>
+    <pre><code>{ <span class="code-string">"toggled"</span>: <span class="code-val">true</span> }</code></pre>
+  </div>
+</div>
+
+<!-- ═══ TOKENS ═══ -->
+<h2 id="api-tokens"><span class="h2-icon">🔑</span> API — Tokens</h2>
+<p>Prefixo: <code>/api/v1/tokens</code></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/tokens</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Listar tokens de agente</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Response <code>200</code></h4>
+    <pre><code>[{
+  <span class="code-string">"id"</span>: <span class="code-val">1</span>,
+  <span class="code-string">"nome"</span>: <span class="code-string">"Servidor Produção"</span>,
+  <span class="code-string">"descricao"</span>: <span class="code-string">"Token para srv-prod-01"</span>,
+  <span class="code-string">"token"</span>: <span class="code-string">"ng_a1b2...d4e5"</span>,
+  <span class="code-string">"ativo"</span>: <span class="code-val">true</span>,
+  <span class="code-string">"ultimo_uso"</span>: <span class="code-string">"2026-02-13T14:23:00Z"</span>,
+  <span class="code-string">"criado_em"</span>: <span class="code-string">"2026-02-12T10:00:00Z"</span>,
+  <span class="code-string">"install_command"</span>: <span class="code-string">"curl -sSL ... | sudo bash -s -- --token ng_..."</span>
+}]</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-post">POST</span>
+    <span class="endpoint-path">/tokens</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Criar novo token</span>
+  </div>
+  <div class="endpoint-body">
+    <h4>Request Body</h4>
+    <pre><code>{
+  <span class="code-string">"nome"</span>: <span class="code-string">"Servidor Produção"</span>,
+  <span class="code-string">"descricao"</span>: <span class="code-string">"Token para srv-prod-01"</span>
+}</code></pre>
+    <h4>Response <code>201</code></h4>
+    <p>Retorna o token completo incluindo <code>install_command</code> com o one-liner de instalação.</p>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-delete">DELETE</span>
+    <span class="endpoint-path">/tokens/{token_id}</span>
+    <span class="badge badge-jwt">JWT</span>
+    <span class="endpoint-desc">Revogar token</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Marca o token como inativo. O agente usando este token deixará de ser aceite. <strong>Erros:</strong> <code>404</code> se não pertence ao usuário.</p>
+  </div>
+</div>
+
+<!-- ═══ ADMIN ═══ -->
+<h2 id="api-admin"><span class="h2-icon">👑</span> API — Admin</h2>
+<p>Prefixo: <code>/api/v1/admin</code> — <strong>Todos os endpoints requerem role <code>superadmin</code>.</strong></p>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/admin/stats</span>
+    <span class="badge badge-admin">Superadmin</span>
+    <span class="endpoint-desc">Estatísticas globais</span>
+  </div>
+  <div class="endpoint-body">
+    <pre><code>{
+  <span class="code-string">"total_users"</span>: <span class="code-val">15</span>,
+  <span class="code-string">"active_users"</span>: <span class="code-val">12</span>,
+  <span class="code-string">"inactive_users"</span>: <span class="code-val">3</span>,
+  <span class="code-string">"total_tokens"</span>: <span class="code-val">28</span>,
+  <span class="code-string">"active_tokens"</span>: <span class="code-val">22</span>
+}</code></pre>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/admin/users</span>
+    <span class="badge badge-admin">Superadmin</span>
+    <span class="endpoint-desc">Listar todos os usuários</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Retorna todos os usuários com <code>total_tokens</code> e <code>active_tokens</code> por usuário.</p>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-put">PUT</span>
+    <span class="endpoint-path">/admin/users/{user_id}</span>
+    <span class="badge badge-admin">Superadmin</span>
+    <span class="endpoint-desc">Ativar/desativar usuário</span>
+  </div>
+  <div class="endpoint-body">
+    <pre><code>{ <span class="code-string">"ativo"</span>: <span class="code-val">false</span> }</code></pre>
+    <p><strong>Erros:</strong> <code>403</code> não é possível desativar superadmin.</p>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-delete">DELETE</span>
+    <span class="endpoint-path">/admin/users/{user_id}</span>
+    <span class="badge badge-admin">Superadmin</span>
+    <span class="endpoint-desc">Excluir usuário</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Remove o usuário e todos os seus tokens. <strong>Erros:</strong> <code>403</code> não é possível excluir superadmin.</p>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/admin/tokens</span>
+    <span class="badge badge-admin">Superadmin</span>
+    <span class="endpoint-desc">Todos os tokens do sistema</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Lista todos os tokens com campos extras: <code>owner_nome</code> e <code>owner_email</code>.</p>
+  </div>
+</div>
+
+<div class="endpoint">
+  <div class="endpoint-header">
+    <span class="method m-get">GET</span>
+    <span class="endpoint-path">/admin/servers</span>
+    <span class="badge badge-admin">Superadmin</span>
+    <span class="endpoint-desc">Todos os servidores do sistema</span>
+  </div>
+  <div class="endpoint-body">
+    <p>Lista todos os servidores com campos extras: <code>owner_nome</code> e <code>owner_email</code>.</p>
+  </div>
+</div>
+
+<!-- ═══ AUTH TABLE ═══ -->
+<h3>Tabela de Autenticação</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Método</th><th>Header</th><th>Usado por</th></tr></thead>
+  <tbody>
+    <tr><td><span class="badge badge-jwt">JWT Bearer</span></td><td><code>Authorization: Bearer &lt;token&gt;</code></td><td>Todos os endpoints de usuário</td></tr>
+    <tr><td><span class="badge badge-token">X-Agent-Token</span></td><td><code>X-Agent-Token: ng_...</code></td><td><code>POST /agents/heartbeat</code></td></tr>
+    <tr><td><span class="badge badge-admin">Superadmin</span></td><td><code>Authorization: Bearer &lt;token&gt;</code> (role=superadmin)</td><td>Todos os <code>/admin/*</code></td></tr>
+    <tr><td><span class="badge badge-none">Público</span></td><td>—</td><td><code>/auth/register</code>, <code>/auth/token</code>, <code>/health</code></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═══ GUIDE CLIENT ═══ -->
+<h2 id="guide-client"><span class="h2-icon">👤</span> Guia do Cliente</h2>
+
+<h4>1. Criar Conta</h4>
+<p>Acesse o painel (ex: <code>http://localhost:5173/login</code>) e clique em <strong>"Criar conta"</strong>. Preencha nome, email e senha.</p>
+
+<h4>2. Fazer Login</h4>
+<p>Use email e senha. O sistema retorna um token JWT válido por 60 minutos (configurável).</p>
+
+<h4>3. Gerar Token de Agente</h4>
+<p>No menu lateral → <strong>🔑 Tokens</strong> → <strong>"Novo Token"</strong>. Dê um nome descritivo e copie o token/comando de instalação.</p>
+<div class="info-card warning">
+  <p style="margin:0">⚠️ O token só é exibido uma vez na criação. Guarde-o com segurança.</p>
+</div>
+
+<h4>4. Instalar o Agente</h4>
+<p>Execute o one-liner no servidor Linux:</p>
+<pre><code>curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- --token SEU_TOKEN --api-url http://backend:8000</code></pre>
+
+<h4>5. Verificar Conexão</h4>
+<p>Na seção <strong>🖥 Servidores</strong>, seu servidor aparecerá como <strong style="color:var(--success)">Online</strong> em ~30 segundos.</p>
+
+<h4>6. Navegar pelos Módulos</h4>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Módulo</th><th>Descrição</th><th>Auto-refresh</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Dashboard</strong></td><td>Resumo: ataques, IPs banidos, servidores, métricas médias</td><td>10s</td></tr>
+    <tr><td><strong>Servidores</strong></td><td>Lista completa de servidores com CPU/RAM/disco</td><td>10s</td></tr>
+    <tr><td><strong>Segurança</strong></td><td>Tentativas de login SSH em tempo real</td><td>—</td></tr>
+    <tr><td><strong>IPs Banidos</strong></td><td>Gerenciar bloqueios (desbloquear manualmente)</td><td>—</td></tr>
+    <tr><td><strong>Tráfego</strong></td><td>Throughput por interface de rede</td><td>—</td></tr>
+    <tr><td><strong>Métricas</strong></td><td>CPU/RAM/Disco por servidor com barras visuais</td><td>10s</td></tr>
+    <tr><td><strong>Automações</strong></td><td>Ativar/desativar regras de resposta automática</td><td>—</td></tr>
+    <tr><td><strong>Alertas</strong></td><td>Visualizar e resolver alertas</td><td>—</td></tr>
+    <tr><td><strong>Forense</strong></td><td>Buscar eventos por IP, hostname ou tipo</td><td>—</td></tr>
+    <tr><td><strong>Logs</strong></td><td>Stream centralizado de logs ao vivo</td><td>5s</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h4>7. Configurações</h4>
+<p>Em <strong>⚙ Configurações</strong> altere nome, email, avatar e senha da sua conta.</p>
+
+<!-- ═══ GUIDE ADMIN ═══ -->
+<h2 id="guide-admin"><span class="h2-icon">🔧</span> Guia do Administrador</h2>
+
+<h4>1. Primeiro Acesso</h4>
+<p>Login com <code>admin@nodeguard.io</code> / <code>admin123</code>. Altere a senha em <strong>Configurações</strong>.</p>
+
+<h4>2. Painel Admin</h4>
+<p>O menu <strong>👑 Admin</strong> (visível só para superadmins) permite:</p>
+<ul>
+  <li>Ver estatísticas globais (usuários, tokens, servidores)</li>
+  <li>Listar, ativar/desativar e excluir usuários</li>
+  <li>Ver todos os tokens de agente do sistema</li>
+  <li>Ver todos os servidores de todos os clientes</li>
+</ul>
+
+<h4>3. Deploy em Produção</h4>
+<ol>
+  <li>Configure <code>JWT_SECRET</code> com valor forte e único.</li>
+  <li>Use <code>--workers 4</code> no uvicorn para múltiplos workers.</li>
+  <li>Coloque um reverse proxy (Nginx/Caddy) na frente.</li>
+  <li>Use HTTPS (Let's Encrypt) para o domínio público.</li>
+  <li>Faça build do frontend (<code>npm run build</code>) e sirva via Nginx.</li>
+</ol>
+
+<h4>4. Checklist de Segurança</h4>
+<div class="info-card danger">
+  <ul style="margin:0">
+    <li>✅ Alterar senha do superadmin</li>
+    <li>✅ Alterar <code>JWT_SECRET</code></li>
+    <li>✅ Usar HTTPS em produção</li>
+    <li>✅ Configurar firewall no servidor do backend</li>
+    <li>✅ Ajustar <code>API_RATE_LIMIT_PER_MINUTE</code></li>
+    <li>✅ Monitorar logs do uvicorn</li>
+  </ul>
+</div>
+
+<h4>5. Monitoramento do Agente</h4>
+<pre><code><span class="code-comment"># Status do serviço</span>
+sudo systemctl status node-guardian-agent
+
+<span class="code-comment"># Logs em tempo real</span>
+sudo journalctl -u node-guardian-agent -f
+
+<span class="code-comment"># Reiniciar</span>
+sudo systemctl restart node-guardian-agent</code></pre>
+
+<!-- ═══ TROUBLESHOOTING ═══ -->
+<h2 id="troubleshooting"><span class="h2-icon">🐛</span> Troubleshooting</h2>
+
+<h4>O servidor não aparece como Online</h4>
+<ul>
+  <li>Verifique se o agente está rodando: <code>systemctl status node-guardian-agent</code></li>
+  <li>Verifique se o token é válido e ativo no painel</li>
+  <li>Verifique conectividade: <code>curl -v http://backend:8000/health</code></li>
+  <li>Verifique logs do agente: <code>journalctl -u node-guardian-agent -f</code></li>
+</ul>
+
+<h4>Erro 401 no heartbeat</h4>
+<ul>
+  <li>Token inválido ou revogado — gere um novo no painel</li>
+  <li>Header <code>X-Agent-Token</code> não está sendo enviado</li>
+</ul>
+
+<h4>Erro 403 ao fazer login</h4>
+<ul>
+  <li>Conta desativada pelo administrador — contacte o admin</li>
+</ul>
+
+<h4>Frontend não carrega dados</h4>
+<ul>
+  <li>Verifique se o backend está rodando: <code>curl http://localhost:8000/health</code></li>
+  <li>Verifique o proxy do Vite em <code>vite.config.ts</code></li>
+  <li>Abra o DevTools (F12) → Network para ver erros de API</li>
+</ul>
+
+<h4>Automações não disparam</h4>
+<ul>
+  <li>Verifique se a regra está ativa no painel de Automações</li>
+  <li>Para brute-force: são necessários ≥ 5 falhas em 5 minutos do mesmo IP</li>
+  <li>Verifique se o agente está enviando <code>login_attempts</code> no heartbeat</li>
+</ul>
+
+<h4>Métricas aparecem zeradas</h4>
+<ul>
+  <li>O agente precisa enviar pelo menos 1 heartbeat com dados de CPU/RAM/disco</li>
+  <li>Dados aparecem somente para servidores com status <code>online</code></li>
+</ul>
+
+<div style="margin-top:60px; padding-top:24px; border-top:1px solid var(--border); text-align:center">
+  <p style="color:var(--muted); font-size:.8rem">© 2026 NodeGuard — Documentação v1.0 · <a href="landing.html">Landing Page</a> · <a href="/login">Acessar Painel</a></p>
+</div>
+
+</main>
+</div>
+
+<!-- ── Sidebar active link highlight ── -->
+<script>
+  const links = document.querySelectorAll('.sidebar-link');
+  const sections = [...links].map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+
+  function updateActive() {
+    let current = '';
+    for (const sec of sections) {
+      if (sec.getBoundingClientRect().top <= 100) current = sec.id;
+    }
+    links.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+  updateActive();
+
+  // Close sidebar on mobile link click
+  links.forEach(l => l.addEventListener('click', () => {
+    document.querySelector('aside').classList.remove('open');
+  }));
+</script>
+
+</body>
+</html>

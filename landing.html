@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NodeGuard — Plataforma de Segurança para Servidores Linux</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #09090b;
+      --card: #131316;
+      --surface: #1a1a1f;
+      --neon: #DC2626;
+      --neon-soft: rgba(220,38,38,.15);
+      --success: #22C55E;
+      --danger: #EF4444;
+      --warn: #F59E0B;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,.06);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    ::selection { background: rgba(220,38,38,.3); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 3px; }
+    a { color: var(--neon); text-decoration: none; transition: opacity .2s; }
+    a:hover { opacity: .85; }
+    img { max-width: 100%; }
+
+    /* ── Layout ──────────────────────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Header / Nav ────────────────────────────────────── */
+    header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(9,9,11,.75); border-bottom: 1px solid var(--border); }
+    nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { font-weight: 800; font-size: 1.25rem; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .logo .shield { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--neon); border-radius: 8px; font-size: .85rem; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { color: var(--muted); font-size: .875rem; font-weight: 500; }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta { background: var(--neon); color: #fff; padding: 8px 20px; border-radius: 8px; font-size: .875rem; font-weight: 600; border: none; cursor: pointer; transition: background .2s; }
+    .nav-cta:hover { background: #b91c1c; }
+
+    /* ── Hero ─────────────────────────────────────────────── */
+    .hero { padding: 160px 0 100px; text-align: center; position: relative; }
+    .hero::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 800px; height: 600px; background: radial-gradient(ellipse, rgba(220,38,38,.08) 0%, transparent 70%); pointer-events: none; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--neon-soft); border: 1px solid rgba(220,38,38,.25); border-radius: 999px; padding: 6px 16px; font-size: .75rem; font-weight: 600; color: var(--neon); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 24px; }
+    .hero-badge .dot { width: 6px; height: 6px; background: var(--neon); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+    .hero h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 20px; }
+    .hero h1 span { color: var(--neon); }
+    .hero p { font-size: 1.125rem; color: var(--muted); max-width: 640px; margin: 0 auto 40px; }
+    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { background: var(--neon); color: #fff; padding: 14px 32px; border-radius: 10px; font-size: 1rem; font-weight: 600; border: none; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary:hover { background: #b91c1c; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(220,38,38,.3); }
+    .btn-secondary { background: transparent; color: #fff; padding: 14px 32px; border-radius: 10px; font-size: 1rem; font-weight: 600; border: 1px solid rgba(255,255,255,.15); cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-secondary:hover { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.05); }
+
+    /* ── Terminal Preview ─────────────────────────────────── */
+    .terminal-preview { margin: 60px auto 0; max-width: 700px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,.5); }
+    .terminal-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: rgba(255,255,255,.03); border-bottom: 1px solid var(--border); }
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .terminal-dot.r { background: #EF4444; }
+    .terminal-dot.y { background: #F59E0B; }
+    .terminal-dot.g { background: #22C55E; }
+    .terminal-bar span { margin-left: auto; font-size: .75rem; color: var(--muted); font-family: monospace; }
+    .terminal-body { padding: 20px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: .8rem; line-height: 1.8; }
+    .terminal-body .prompt { color: var(--success); }
+    .terminal-body .cmd { color: #fff; }
+    .terminal-body .output { color: var(--muted); }
+    .terminal-body .highlight { color: var(--neon); }
+
+    /* ── Section ──────────────────────────────────────────── */
+    section { padding: 100px 0; }
+    .section-label { display: inline-flex; align-items: center; gap: 6px; color: var(--neon); font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+    .section-title { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 12px; }
+    .section-desc { color: var(--muted); max-width: 600px; margin-bottom: 48px; }
+
+    /* ── Features Grid ───────────────────────────────────── */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; transition: all .25s; }
+    .feature-card:hover { border-color: rgba(220,38,38,.2); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+    .feature-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 1.25rem; }
+    .fi-red { background: var(--neon-soft); color: var(--neon); }
+    .fi-green { background: rgba(34,197,94,.12); color: var(--success); }
+    .fi-yellow { background: rgba(245,158,11,.12); color: var(--warn); }
+    .fi-blue { background: rgba(59,130,246,.12); color: #3B82F6; }
+    .feature-card h3 { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .feature-card p { font-size: .875rem; color: var(--muted); }
+
+    /* ── How It Works ────────────────────────────────────── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; counter-reset: step; }
+    .step { position: relative; text-align: center; padding: 32px 20px; }
+    .step-num { width: 48px; height: 48px; border-radius: 50%; background: var(--neon); color: #fff; font-weight: 800; font-size: 1.25rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+    .step h3 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .step p { font-size: .85rem; color: var(--muted); }
+
+    /* ── Guide Tabs ──────────────────────────────────────── */
+    .guide-tabs { display: flex; gap: 4px; margin-bottom: 32px; background: var(--card); border-radius: 10px; padding: 4px; width: fit-content; }
+    .guide-tab { padding: 10px 24px; border-radius: 8px; font-size: .875rem; font-weight: 600; color: var(--muted); border: none; background: none; cursor: pointer; transition: all .2s; }
+    .guide-tab.active { background: var(--neon); color: #fff; }
+    .guide-panel { display: none; }
+    .guide-panel.active { display: block; }
+
+    /* ── Cards for guide steps ───────────────────────────── */
+    .guide-steps { display: flex; flex-direction: column; gap: 20px; }
+    .guide-step { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; display: flex; gap: 20px; align-items: flex-start; }
+    .guide-step-num { flex-shrink: 0; width: 36px; height: 36px; border-radius: 8px; background: var(--neon-soft); color: var(--neon); font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: .9rem; }
+    .guide-step h4 { font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .guide-step p { font-size: .875rem; color: var(--muted); margin-bottom: 10px; }
+    .guide-step code, .code-block { display: block; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; font-family: 'JetBrains Mono', monospace; font-size: .8rem; color: var(--success); overflow-x: auto; margin-top: 6px; white-space: pre; }
+    .code-inline { background: var(--surface); padding: 2px 8px; border-radius: 4px; font-family: monospace; font-size: .8rem; color: var(--neon); }
+
+    /* ── Architecture Section ─────────────────────────────── */
+    .arch-diagram { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 40px; max-width: 800px; margin: 0 auto; }
+    .arch-flow { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .arch-node { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 28px; text-align: center; font-size: .875rem; font-weight: 600; color: #fff; min-width: 200px; }
+    .arch-node.primary { border-color: rgba(220,38,38,.3); background: var(--neon-soft); }
+    .arch-arrow { color: var(--muted); font-size: 1.5rem; }
+    .arch-row { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+
+    /* ── Pricing Teaser ───────────────────────────────────── */
+    .pricing-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
+    .price-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 32px; text-align: center; transition: all .25s; }
+    .price-card.featured { border-color: rgba(220,38,38,.3); box-shadow: 0 0 40px rgba(220,38,38,.08); }
+    .price-card h3 { font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .price-val { font-size: 2.5rem; font-weight: 900; color: #fff; margin: 16px 0 4px; }
+    .price-val span { font-size: .9rem; font-weight: 400; color: var(--muted); }
+    .price-card ul { list-style: none; text-align: left; margin: 20px 0; }
+    .price-card li { font-size: .85rem; color: var(--muted); padding: 6px 0; display: flex; align-items: center; gap: 8px; }
+    .price-card li::before { content: '✓'; color: var(--success); font-weight: 700; }
+
+    /* ── Footer ───────────────────────────────────────────── */
+    footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; }
+    footer p { font-size: .8rem; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 12px; }
+    .footer-links a { color: var(--muted); font-size: .85rem; }
+    .footer-links a:hover { color: #fff; }
+
+    /* ── Responsive ───────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero { padding: 130px 0 60px; }
+      .hero h1 { font-size: 2rem; }
+      section { padding: 60px 0; }
+      .guide-step { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════ NAV ══════════════ -->
+  <header>
+    <nav class="container">
+      <div class="logo">
+        <span class="shield">🛡</span> NodeGuard
+      </div>
+      <ul class="nav-links">
+        <li><a href="#features">Funcionalidades</a></li>
+        <li><a href="#how-it-works">Como Funciona</a></li>
+        <li><a href="#guide">Guia de Uso</a></li>
+        <li><a href="#arch">Arquitetura</a></li>
+        <li><a href="docs.html">Documentação</a></li>
+      </ul>
+      <a href="/login" class="nav-cta" style="color:#fff">Acessar Painel →</a>
+    </nav>
+  </header>
+
+  <!-- ══════════════ HERO ══════════════ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge"><span class="dot"></span> Monitoramento em Tempo Real</div>
+      <h1>Proteja seus servidores<br />com <span>NodeGuard</span></h1>
+      <p>Plataforma completa de segurança e monitoramento para servidores Linux. Detecção automática de ameaças, bloqueio de IPs, métricas em tempo real e muito mais.</p>
+      <div class="hero-actions">
+        <a href="#guide" class="btn-primary">Começar Agora →</a>
+        <a href="docs.html" class="btn-secondary">📄 Documentação</a>
+      </div>
+
+      <!-- Terminal Preview -->
+      <div class="terminal-preview">
+        <div class="terminal-bar">
+          <span class="terminal-dot r"></span>
+          <span class="terminal-dot y"></span>
+          <span class="terminal-dot g"></span>
+          <span>bash — node-guardian-agent</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- --token ng_abc123...</span></div>
+          <div class="output">  ╔══════════════════════════════════════════╗</div>
+          <div class="output">  ║       🛡️  NodeGuard Agent Installer       ║</div>
+          <div class="output">  ╚══════════════════════════════════════════╝</div>
+          <div class="output">[1/5] Checking dependencies... <span class="highlight">✓</span></div>
+          <div class="output">[2/5] Creating directories...  <span class="highlight">✓</span></div>
+          <div class="output">[3/5] Writing configuration... <span class="highlight">✓</span></div>
+          <div class="output">[4/5] Downloading agent...     <span class="highlight">✓</span></div>
+          <div class="output">[5/5] Configuring systemd...   <span class="highlight">✓</span></div>
+          <div class="output" style="margin-top:6px">  <span class="highlight">✅ NodeGuard Agent installed and running!</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ FEATURES ══════════════ -->
+  <section id="features">
+    <div class="container">
+      <div class="section-label">⚡ Funcionalidades</div>
+      <h2 class="section-title">Tudo o que você precisa num só lugar</h2>
+      <p class="section-desc">Do monitoramento ao bloqueio automático, cobrimos cada aspecto da segurança dos seus servidores.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon fi-red">🛡</div>
+          <h3>Detecção de Brute-Force</h3>
+          <p>Monitoramento contínuo de tentativas de login SSH. IPs com tentativas excessivas são banidos automaticamente.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-green">📊</div>
+          <h3>Métricas em Tempo Real</h3>
+          <p>CPU, RAM, disco, conexões e portas abertas de todos os servidores com atualização automática a cada 30 segundos.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-yellow">⚡</div>
+          <h3>Automações Inteligentes</h3>
+          <p>Regras personalizáveis de resposta a incidentes: banir IP, criar alerta, notificar por email/Telegram.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-blue">🌐</div>
+          <h3>Tráfego de Rede</h3>
+          <p>Análise de throughput por interface — bytes, pacotes, entrada e saída com drill-down por servidor.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-red">🔒</div>
+          <h3>Gestão de IPs Banidos</h3>
+          <p>Visualize, bloqueie e desbloqueie IPs manualmente ou automaticamente. Controle total sobre sua lista negra.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-green">🔔</div>
+          <h3>Central de Alertas</h3>
+          <p>Alertas críticos, warnings e informativos com histórico completo. Resolva diretamente pelo painel.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-yellow">🔍</div>
+          <h3>Análise Forense</h3>
+          <p>Busque por qualquer indicador de comprometimento nos eventos dos agentes. IP, hostname, tipo de ataque.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-blue">📜</div>
+          <h3>Log Stream ao Vivo</h3>
+          <p>Stream centralizado de logs de todos os agentes com atualização a cada 5 segundos e filtro por severidade.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon fi-red">👥</div>
+          <h3>Multi-Tenant</h3>
+          <p>Cada cliente possui seus próprios servidores, tokens e dados. Isolamento completo entre contas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ HOW IT WORKS ══════════════ -->
+  <section id="how-it-works" style="background: var(--card);">
+    <div class="container">
+      <div style="text-align:center">
+        <div class="section-label">🔄 Fluxo</div>
+        <h2 class="section-title">Como Funciona</h2>
+        <p class="section-desc" style="margin:0 auto 48px">Em 3 passos simples o seu servidor está protegido.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Crie uma Conta</h3>
+          <p>Registre-se no painel e faça login. Contas novas já possuem acesso a todas as funcionalidades.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>Gere um Token</h3>
+          <p>Na seção <strong>Tokens</strong>, crie um token de agente. Ele vincula o servidor à sua conta de forma segura.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>Instale o Agente</h3>
+          <p>Copie o comando de instalação e execute no seu servidor Linux. O agente começa a enviar dados automaticamente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ GUIDE ══════════════ -->
+  <section id="guide">
+    <div class="container">
+      <div class="section-label">📖 Guia Completo</div>
+      <h2 class="section-title">Instruções de Uso</h2>
+      <p class="section-desc">Selecione seu perfil para ver as instruções específicas.</p>
+
+      <div class="guide-tabs">
+        <button class="guide-tab active" onclick="switchTab('client')">👤 Cliente</button>
+        <button class="guide-tab" onclick="switchTab('admin')">🔧 Administrador</button>
+      </div>
+
+      <!-- ─── CLIENT GUIDE ─── -->
+      <div id="panel-client" class="guide-panel active">
+        <div class="guide-steps">
+
+          <div class="guide-step">
+            <div class="guide-step-num">1</div>
+            <div>
+              <h4>Criar Conta</h4>
+              <p>Acesse o painel e clique em <strong>"Criar conta"</strong> na tela de login. Preencha nome, email e senha.</p>
+              <code>URL: http://seu-servidor:5173/login</code>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">2</div>
+            <div>
+              <h4>Fazer Login</h4>
+              <p>Use o email e senha cadastrados. Você receberá um token JWT válido por 60 minutos (renovável).</p>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">3</div>
+            <div>
+              <h4>Criar Token de Agente</h4>
+              <p>No menu lateral, vá em <strong>🔑 Tokens</strong>. Clique em <strong>"Novo Token"</strong>, dê um nome descritivo (ex: "Servidor Produção 01") e copie o token gerado.</p>
+              <p>⚠️ O token só é exibido uma vez. Guarde-o com segurança.</p>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">4</div>
+            <div>
+              <h4>Instalar o Agente no Servidor</h4>
+              <p>No seu servidor Linux (Ubuntu, Debian, CentOS, etc.), execute o comando de instalação one-liner:</p>
+              <code>curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- --token SEU_TOKEN_AQUI</code>
+              <p style="margin-top:10px">Ou se utilizar API própria:</p>
+              <code>curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- --token SEU_TOKEN --api-url http://seu-backend:8000</code>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">5</div>
+            <div>
+              <h4>Verificar Servidor Online</h4>
+              <p>Após a instalação, volte ao painel. Na seção <strong>🖥 Servidores</strong>, o seu servidor deve aparecer com status <span style="color:var(--success); font-weight:600">Online</span> dentro de 30 segundos.</p>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">6</div>
+            <div>
+              <h4>Explorar o Dashboard</h4>
+              <p>O dashboard mostra um resumo completo:</p>
+              <ul style="list-style:none; padding:0; margin:8px 0; color:var(--muted); font-size:.875rem">
+                <li>📊 <strong>Ataques detectados</strong> — total de eventos críticos/warning</li>
+                <li>🚫 <strong>IPs banidos</strong> — IPs atualmente bloqueados</li>
+                <li>🖥 <strong>Servidores online</strong> — quantos agentes ativos</li>
+                <li>🔔 <strong>Alertas ativos</strong> — alertas pendentes</li>
+                <li>📈 <strong>Métricas médias</strong> — CPU, RAM, disco de toda frota</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">7</div>
+            <div>
+              <h4>Navegar pelos Módulos</h4>
+              <p>Use o menu lateral para acessar cada módulo:</p>
+              <ul style="list-style:none; padding:0; margin:8px 0; color:var(--muted); font-size:.875rem">
+                <li>🛡 <strong>Segurança</strong> — tentativas de login SSH em tempo real</li>
+                <li>🚫 <strong>IPs Banidos</strong> — gerenciar bloqueios (desbloquear manualmente)</li>
+                <li>📡 <strong>Tráfego</strong> — throughput de cada interface de rede</li>
+                <li>📊 <strong>Métricas</strong> — CPU/RAM/Disco por servidor com barras visuais</li>
+                <li>⚡ <strong>Automações</strong> — ativar/desativar regras de resposta automática</li>
+                <li>🔔 <strong>Alertas</strong> — visualizar e resolver alertas</li>
+                <li>🔍 <strong>Forense</strong> — buscar eventos por IP, hostname ou tipo</li>
+                <li>📜 <strong>Logs</strong> — stream centralizado de logs (live)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">8</div>
+            <div>
+              <h4>Configurações da Conta</h4>
+              <p>Em <strong>⚙ Configurações</strong> você pode alterar nome, email, avatar e senha da sua conta.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ─── ADMIN GUIDE ─── -->
+      <div id="panel-admin" class="guide-panel">
+        <div class="guide-steps">
+
+          <div class="guide-step">
+            <div class="guide-step-num">1</div>
+            <div>
+              <h4>Acesso Superadmin</h4>
+              <p>O sistema cria automaticamente uma conta superadmin no primeiro boot:</p>
+              <code>Email: admin@nodeguard.io
+Senha: admin123</code>
+              <p style="margin-top:10px; color:var(--danger)">⚠️ <strong>IMPORTANTE:</strong> Altere a senha imediatamente após o primeiro login em Configurações.</p>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">2</div>
+            <div>
+              <h4>Painel de Administração</h4>
+              <p>O menu <strong>👑 Admin</strong> só aparece para contas superadmin. Nele você pode:</p>
+              <ul style="list-style:none; padding:0; margin:8px 0; color:var(--muted); font-size:.875rem">
+                <li>📊 Ver estatísticas globais (total de usuários, tokens, servidores)</li>
+                <li>👥 Listar todos os usuários registrados</li>
+                <li>✅ Ativar/desativar contas de usuários</li>
+                <li>🗑 Excluir usuários</li>
+                <li>🔑 Ver todos os tokens de agente do sistema</li>
+                <li>🖥 Ver todos os servidores de todos os clientes</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">3</div>
+            <div>
+              <h4>Deploy do Backend</h4>
+              <p>O backend é uma API FastAPI (Python). Para subir:</p>
+              <code>cd backend
+pip install -r requirements.txt
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload</code>
+              <p style="margin-top:10px">Ou com Docker:</p>
+              <code>docker compose up --build</code>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">4</div>
+            <div>
+              <h4>Deploy do Frontend</h4>
+              <p>O frontend é React + Vite. Para desenvolvimento:</p>
+              <code>cd frontend
+npm install
+npm run dev</code>
+              <p style="margin-top:10px">Para produção:</p>
+              <code>npm run build
+# Servir pasta dist/ com Nginx, Caddy, etc.</code>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">5</div>
+            <div>
+              <h4>Configuração de Variáveis de Ambiente</h4>
+              <p>Crie um arquivo <span class="code-inline">.env</span> na pasta <span class="code-inline">backend/</span> com as seguintes variáveis:</p>
+              <code>JWT_SECRET=sua_chave_secreta_forte
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+API_RATE_LIMIT_PER_MINUTE=120
+
+# Notificações (opcional)
+DISCORD_WEBHOOK_URL=
+SLACK_WEBHOOK_URL=
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=</code>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">6</div>
+            <div>
+              <h4>Gerenciar Automações Globais</h4>
+              <p>O sistema vem com 5 regras de automação pré-configuradas:</p>
+              <ul style="list-style:none; padding:0; margin:8px 0; color:var(--muted); font-size:.875rem">
+                <li>🔒 <strong>SSH Brute-Force Auto Ban</strong> — ≥5 falhas em 5min → ban 24h</li>
+                <li>🔍 <strong>Port Scan Detection</strong> — scan detectado → ban 48h + alerta</li>
+                <li>🔥 <strong>CPU Critical Alert</strong> — CPU > 95% → alerta crítico</li>
+                <li>💾 <strong>Disk Space Warning</strong> — disco > 85% → alerta warning</li>
+                <li>🌊 <strong>DDoS Mitigation</strong> — > 1000 conns/min → rate limit + ban 1h</li>
+              </ul>
+              <p>Todas as regras podem ser ativadas/desativadas pelo painel. Clientes também podem criar regras personalizadas.</p>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">7</div>
+            <div>
+              <h4>Monitoramento do Agente</h4>
+              <p>O agente Go envia um heartbeat a cada 30 segundos contendo:</p>
+              <ul style="list-style:none; padding:0; margin:8px 0; color:var(--muted); font-size:.875rem">
+                <li>💻 <strong>Sistema</strong> — hostname, IP público, SO, uptime</li>
+                <li>📊 <strong>Métricas</strong> — CPU%, RAM%, disco%, conexões, portas abertas</li>
+                <li>🌐 <strong>Interfaces</strong> — bytes/pacotes in/out por interface</li>
+                <li>🔒 <strong>Login Attempts</strong> — tentativas de login SSH (parsed de auth.log)</li>
+                <li>📋 <strong>Eventos</strong> — eventos de segurança detectados</li>
+              </ul>
+              <p>Verificar status do agente:</p>
+              <code>sudo systemctl status node-guardian-agent
+sudo journalctl -u node-guardian-agent -f</code>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="guide-step-num">8</div>
+            <div>
+              <h4>Endpoints da API</h4>
+              <p>A API REST completa está documentada em <a href="docs.html">docs.html</a>. Os endpoints principais:</p>
+              <code>GET  /health                        → Healthcheck
+GET  /metrics/prometheus            → Métricas Prometheus
+POST /api/v1/auth/register          → Criar conta
+POST /api/v1/auth/token             → Login (JWT)
+POST /api/v1/agents/heartbeat       → Heartbeat do agente (X-Agent-Token)
+GET  /api/v1/servers                → Listar servidores
+GET  /api/v1/servers/stats          → Dashboard stats
+GET  /api/v1/events                 → Listar eventos
+GET  /api/v1/security/login-attempts→ Tentativas de login
+GET  /api/v1/security/banned-ips    → IPs banidos
+GET  /api/v1/alerts                 → Alertas
+GET  /api/v1/automations            → Regras de automação</code>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ ARCHITECTURE ══════════════ -->
+  <section id="arch" style="background: var(--card);">
+    <div class="container">
+      <div style="text-align:center">
+        <div class="section-label">🏗 Arquitetura</div>
+        <h2 class="section-title">Visão do Sistema</h2>
+        <p class="section-desc" style="margin:0 auto 48px">Arquitetura modular orientada a eventos, projetada para escala.</p>
+      </div>
+      <div class="arch-diagram">
+        <div class="arch-flow">
+          <div class="arch-row">
+            <div class="arch-node primary">🛡 Agente Go<br /><small style="color:var(--muted); font-weight:400">Cada servidor Linux</small></div>
+          </div>
+          <div class="arch-arrow">↓ Heartbeat (JSON + Token)</div>
+          <div class="arch-row">
+            <div class="arch-node primary">⚙ Core API — FastAPI<br /><small style="color:var(--muted); font-weight:400">Backend Python</small></div>
+          </div>
+          <div class="arch-arrow">↓ Avalia regras + persiste</div>
+          <div class="arch-row">
+            <div class="arch-node">🤖 Motor de Automação<br /><small style="color:var(--muted); font-weight:400">Regras → Ações</small></div>
+            <div class="arch-node">💾 Data Store<br /><small style="color:var(--muted); font-weight:400">in-memory / DB</small></div>
+            <div class="arch-node">📢 Notificadores<br /><small style="color:var(--muted); font-weight:400">Discord / Telegram / SMTP</small></div>
+          </div>
+          <div class="arch-arrow">↓ API REST + JWT</div>
+          <div class="arch-row">
+            <div class="arch-node primary">🖥 Dashboard React<br /><small style="color:var(--muted); font-weight:400">Frontend SPA</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ CTA ══════════════ -->
+  <section style="text-align:center">
+    <div class="container">
+      <h2 class="section-title">Pronto para proteger seus servidores?</h2>
+      <p class="section-desc" style="margin:0 auto 32px">Instale o agente em menos de 1 minuto e tenha visibilidade total da segurança da sua infraestrutura.</p>
+      <div class="hero-actions">
+        <a href="/login" class="btn-primary">Acessar o Painel →</a>
+        <a href="docs.html" class="btn-secondary">📄 Documentação Completa</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════ FOOTER ══════════════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="#features">Funcionalidades</a>
+        <a href="#guide">Guia de Uso</a>
+        <a href="docs.html">Documentação</a>
+        <a href="#arch">Arquitetura</a>
+      </div>
+      <p>© 2026 NodeGuard. Plataforma de segurança para servidores Linux.</p>
+    </div>
+  </footer>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.guide-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.guide-panel').forEach(p => p.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+    }
+  </script>
+</body>
+</html>

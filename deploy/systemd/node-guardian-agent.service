@@ -1,0 +1,18 @@
+[Unit]
+Description=Node Guardian Agent
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/node-guardian-agent
+Restart=always
+RestartSec=5
+Environment=NG_API_URL=https://core-api.example.com/api/v1/events
+Environment=NG_AGENT_TOKEN=replace_me
+Environment=NG_CLIENT_CERT=/etc/node-guardian/client.crt
+Environment=NG_CLIENT_KEY=/etc/node-guardian/client.key
+Environment=NG_CA_CERT=/etc/node-guardian/ca.crt
+
+[Install]
+WantedBy=multi-user.target
