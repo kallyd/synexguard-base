@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NodeGuard — Plataforma de Segurança para Servidores Linux</title>
+  <title>SynexGuard — Plataforma de Segurança para Servidores Linux</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     /* ── Reset & Base ────────────────────────────────────── */
@@ -157,7 +157,7 @@
   <header>
     <nav class="container">
       <div class="logo">
-        <span class="shield">🛡</span> NodeGuard
+        <span class="shield">🛡</span> SynexGuard
       </div>
       <ul class="nav-links">
         <li><a href="#features">Funcionalidades</a></li>
@@ -174,7 +174,7 @@
   <section class="hero">
     <div class="container">
       <div class="hero-badge"><span class="dot"></span> Monitoramento em Tempo Real</div>
-      <h1>Proteja seus servidores<br />com <span>NodeGuard</span></h1>
+      <h1>Proteja seus servidores<br />com <span>SynexGuard</span></h1>
       <p>Plataforma completa de segurança e monitoramento para servidores Linux. Detecção automática de ameaças, bloqueio de IPs, métricas em tempo real e muito mais.</p>
       <div class="hero-actions">
         <a href="#guide" class="btn-primary">Começar Agora →</a>
@@ -187,19 +187,19 @@
           <span class="terminal-dot r"></span>
           <span class="terminal-dot y"></span>
           <span class="terminal-dot g"></span>
-          <span>bash — node-guardian-agent</span>
+          <span>bash — synexguard-agent</span>
         </div>
         <div class="terminal-body">
-          <div><span class="prompt">$</span> <span class="cmd">curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- --token ng_abc123...</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">curl -sSL https://synex-guard.io/install.sh | sudo bash -s -- --token ng_abc123...</span></div>
           <div class="output">  ╔══════════════════════════════════════════╗</div>
-          <div class="output">  ║       🛡️  NodeGuard Agent Installer       ║</div>
+          <div class="output">  ║       🛡️  SynexGuard Agent Installer       ║</div>
           <div class="output">  ╚══════════════════════════════════════════╝</div>
           <div class="output">[1/5] Checking dependencies... <span class="highlight">✓</span></div>
           <div class="output">[2/5] Creating directories...  <span class="highlight">✓</span></div>
           <div class="output">[3/5] Writing configuration... <span class="highlight">✓</span></div>
           <div class="output">[4/5] Downloading agent...     <span class="highlight">✓</span></div>
           <div class="output">[5/5] Configuring systemd...   <span class="highlight">✓</span></div>
-          <div class="output" style="margin-top:6px">  <span class="highlight">✅ NodeGuard Agent installed and running!</span></div>
+          <div class="output" style="margin-top:6px">  <span class="highlight">✅ SynexGuard Agent installed and running!</span></div>
         </div>
       </div>
     </div>
@@ -337,9 +337,9 @@
             <div>
               <h4>Instalar o Agente no Servidor</h4>
               <p>No seu servidor Linux (Ubuntu, Debian, CentOS, etc.), execute o comando de instalação one-liner:</p>
-              <code>curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- --token SEU_TOKEN_AQUI</code>
+              <code>curl -sSL https://synex-guard.io/install.sh | sudo bash -s -- --token SEU_TOKEN_AQUI</code>
               <p style="margin-top:10px">Ou se utilizar API própria:</p>
-              <code>curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- --token SEU_TOKEN --api-url http://seu-backend:8000</code>
+              <code>curl -sSL https://synex-guard.io/install.sh | sudo bash -s -- --token SEU_TOKEN --api-url http://seu-backend:8000</code>
             </div>
           </div>
 
@@ -404,7 +404,7 @@
             <div>
               <h4>Acesso Superadmin</h4>
               <p>O sistema cria automaticamente uma conta superadmin no primeiro boot:</p>
-              <code>Email: admin@nodeguard.io
+              <code>Email: admin@synex-guard.io
 Senha: admin123</code>
               <p style="margin-top:10px; color:var(--danger)">⚠️ <strong>IMPORTANTE:</strong> Altere a senha imediatamente após o primeiro login em Configurações.</p>
             </div>
@@ -505,8 +505,8 @@ SMTP_FROM=</code>
                 <li>📋 <strong>Eventos</strong> — eventos de segurança detectados</li>
               </ul>
               <p>Verificar status do agente:</p>
-              <code>sudo systemctl status node-guardian-agent
-sudo journalctl -u node-guardian-agent -f</code>
+              <code>sudo systemctl status synexguard-agent
+sudo journalctl -u synexguard-agent -f</code>
             </div>
           </div>
 
@@ -588,7 +588,7 @@ GET  /api/v1/automations            → Regras de automação</code>
         <a href="docs.html">Documentação</a>
         <a href="#arch">Arquitetura</a>
       </div>
-      <p>© 2026 NodeGuard. Plataforma de segurança para servidores Linux.</p>
+      <p>© 2026 SynexGuard. Plataforma de segurança para servidores Linux.</p>
     </div>
   </footer>
 

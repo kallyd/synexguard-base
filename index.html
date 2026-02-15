@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SynexGuard — Segurança Inteligente para Servidores Linux</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       RESET & VARIABLES
+       ═══════════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:         #09090b;
+      --bg-soft:    #0f0f14;
+      --surface:    #131318;
+      --card:       #18181d;
+      --card-hover: #1e1e25;
+      --red:        #DC2626;
+      --red-light:  #ef4444;
+      --red-dark:   #991b1b;
+      --red-glow:   rgba(220,38,38,.12);
+      --green:      #22c55e;
+      --amber:      #f59e0b;
+      --blue:       #3b82f6;
+      --text:       #e4e4e7;
+      --text-dim:   #a1a1aa;
+      --text-muted: #71717a;
+      --border:     rgba(255,255,255,.06);
+      --border-red: rgba(220,38,38,.2);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    ::selection { background: rgba(220,38,38,.35); color: #fff; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 99px; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+    /* ═══════════════════════════════════════════════════════════
+       ANIMATED BACKGROUND
+       ═══════════════════════════════════════════════════════════ */
+    .bg-glow {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    }
+    .bg-glow::before {
+      content: '';
+      position: absolute;
+      top: -30%; left: -10%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(220,38,38,.08) 0%, transparent 70%);
+      animation: float 20s ease-in-out infinite;
+    }
+    .bg-glow::after {
+      content: '';
+      position: absolute;
+      bottom: -20%; right: -10%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(220,38,38,.06) 0%, transparent 70%);
+      animation: float 25s ease-in-out infinite reverse;
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      33% { transform: translate(60px, -40px); }
+      66% { transform: translate(-40px, 30px); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       HEADER
+       ═══════════════════════════════════════════════════════════ */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(9,9,11,.8);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all .3s;
+    }
+    header.scrolled {
+      background: rgba(9,9,11,.95);
+      box-shadow: 0 4px 30px rgba(0,0,0,.3);
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 70px;
+    }
+    .logo-link {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .logo-mark {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--red) 0%, var(--red-light) 100%);
+      border-radius: 10px;
+      display: grid; place-items: center;
+      font-size: 1.2rem;
+      box-shadow: 0 0 20px rgba(220,38,38,.2);
+    }
+    .logo-word {
+      font-weight: 800; font-size: 1.2rem; color: #fff;
+      letter-spacing: -.3px;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: .9rem; font-weight: 500; color: var(--text-dim);
+      transition: color .25s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .btn-nav {
+      background: var(--red); color: #fff !important;
+      padding: .6rem 1.4rem; border-radius: .5rem;
+      font-weight: 600; font-size: .85rem;
+      transition: all .25s;
+      box-shadow: 0 2px 12px rgba(220,38,38,.25);
+    }
+    .btn-nav:hover {
+      background: var(--red-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(220,38,38,.35);
+    }
+    .mobile-toggle {
+      display: none; background: none; border: none;
+      color: #fff; font-size: 1.5rem; cursor: pointer;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       HERO
+       ═══════════════════════════════════════════════════════════ */
+    .hero {
+      padding: 10rem 0 6rem;
+      position: relative;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .hero-text { position: relative; z-index: 2; }
+
+    .hero-chip {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--red-glow);
+      border: 1px solid var(--border-red);
+      padding: .5rem 1.2rem; border-radius: 99px;
+      font-size: .8rem; font-weight: 600; color: var(--red-light);
+      margin-bottom: 1.5rem;
+    }
+    .hero-chip .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--red); display: inline-block;
+      animation: blink 2s infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 1; } 50% { opacity: .3; }
+    }
+
+    .hero h1 {
+      font-size: 3.4rem; font-weight: 900; line-height: 1.15;
+      letter-spacing: -1.5px; margin-bottom: 1.5rem;
+    }
+    .hero h1 .accent {
+      background: linear-gradient(135deg, var(--red), var(--red-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-desc {
+      font-size: 1.1rem; color: var(--text-dim); max-width: 480px;
+      margin-bottom: 2.5rem; line-height: 1.8;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .9rem 2rem; border-radius: .6rem;
+      font-weight: 600; font-size: .95rem;
+      transition: all .3s; cursor: pointer; border: none;
+    }
+    .btn-red {
+      background: linear-gradient(135deg, var(--red), var(--red-light));
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(220,38,38,.3);
+    }
+    .btn-red:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(220,38,38,.4);
+    }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      border: 2px solid var(--border-red);
+    }
+    .btn-outline:hover {
+      background: var(--red-glow); border-color: var(--red);
+    }
+
+    /* ── Hero trust indicators ── */
+    .trust-row {
+      display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .85rem; color: var(--text-muted);
+    }
+    .trust-item .ico { color: var(--green); font-size: 1rem; }
+
+    /* ── Logo Showcase ── */
+    .hero-visual {
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .logo-showcase {
+      width: 512px; height: 512px;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-showcase .ring {
+      position: absolute; inset: 0;
+      border: 2px solid var(--border-red);
+      border-radius: 50%;
+      animation: spin-slow 40s linear infinite;
+    }
+    .logo-showcase .ring:nth-child(2) {
+      inset: 30px;
+      border-style: dashed;
+      animation-direction: reverse;
+      animation-duration: 60s;
+    }
+    .logo-showcase .ring:nth-child(3) {
+      inset: 60px;
+      border-color: rgba(220,38,38,.1);
+      animation-duration: 80s;
+    }
+    @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+    .logo-container {
+      width: 512px; height: 512px;
+      border-radius: 2rem;
+      overflow: hidden;
+      position: relative; z-index: 2;
+      background: linear-gradient(135deg, var(--surface), var(--card));
+      border: 2px solid var(--border-red);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 1rem;
+      box-shadow:
+        0 0 60px rgba(220,38,38,.08),
+        0 20px 60px rgba(0,0,0,.4);
+    }
+    .logo-container img {
+      width: 512px; height: 512px;
+      object-fit: contain;
+      display: none; /* hidden until an image is placed */
+    }
+    .logo-placeholder-content {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 1rem;
+      color: var(--text-muted); text-align: center;
+      padding: 2rem;
+    }
+    .logo-placeholder-content .icon-big {
+      font-size: 4rem; opacity: .3;
+      filter: grayscale(.5);
+    }
+    .logo-placeholder-content .label {
+      font-size: .9rem; font-weight: 500;
+      color: var(--text-dim);
+    }
+    .logo-placeholder-content .size {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem; color: var(--text-muted);
+      background: rgba(220,38,38,.08); border: 1px solid var(--border-red);
+      padding: .3rem .8rem; border-radius: .3rem;
+    }
+
+    /* corner dots decoration */
+    .logo-container::before,
+    .logo-container::after {
+      content: ''; position: absolute;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 10px var(--red);
+    }
+    .logo-container::before { top: 16px; left: 16px; }
+    .logo-container::after  { bottom: 16px; right: 16px; }
+
+    /* ═══════════════════════════════════════════════════════════
+       STATS BAR
+       ═══════════════════════════════════════════════════════════ */
+    .stats-bar {
+      padding: 4rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-soft);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 2.8rem; font-weight: 900; color: var(--red);
+      letter-spacing: -1px;
+    }
+    .stat-label {
+      font-size: .9rem; color: var(--text-dim); margin-top: .3rem;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       FEATURES
+       ═══════════════════════════════════════════════════════════ */
+    .features {
+      padding: 7rem 0;
+    }
+    .section-header {
+      text-align: center; margin-bottom: 4rem;
+    }
+    .section-header .tag {
+      display: inline-block;
+      font-size: .75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 2px; color: var(--red);
+      margin-bottom: .75rem;
+    }
+    .section-header h2 {
+      font-size: 2.5rem; font-weight: 900; letter-spacing: -1px;
+      margin-bottom: 1rem;
+    }
+    .section-header p {
+      font-size: 1.05rem; color: var(--text-dim); max-width: 550px;
+      margin: 0 auto;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .feat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      transition: all .35s;
+      position: relative; overflow: hidden;
+    }
+    .feat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      opacity: 0; transition: opacity .35s;
+    }
+    .feat-card:hover {
+      border-color: var(--border-red);
+      background: var(--card);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    }
+    .feat-card:hover::before { opacity: 1; }
+    .feat-icon {
+      width: 48px; height: 48px; border-radius: .75rem;
+      background: var(--red-glow);
+      border: 1px solid var(--border-red);
+      display: grid; place-items: center;
+      font-size: 1.4rem; margin-bottom: 1.2rem;
+    }
+    .feat-card h3 {
+      font-size: 1.1rem; font-weight: 700; margin-bottom: .6rem;
+    }
+    .feat-card p {
+      font-size: .9rem; color: var(--text-dim); line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       HOW IT WORKS
+       ═══════════════════════════════════════════════════════════ */
+    .how-it-works {
+      padding: 7rem 0;
+      background: var(--bg-soft);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .steps {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+      margin-top: 3rem;
+    }
+    .step-card {
+      text-align: center; position: relative;
+    }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      display: grid; place-items: center;
+      font-size: 1.3rem; font-weight: 800; color: #fff;
+      margin: 0 auto 1.2rem;
+      box-shadow: 0 4px 20px rgba(220,38,38,.25);
+    }
+    .step-card h4 {
+      font-size: 1rem; font-weight: 700; margin-bottom: .5rem;
+    }
+    .step-card p {
+      font-size: .85rem; color: var(--text-dim); line-height: 1.6;
+    }
+    .step-card:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      top: 24px; right: -1.2rem;
+      font-size: 1.2rem; color: var(--text-muted);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       TERMINAL PREVIEW
+       ═══════════════════════════════════════════════════════════ */
+    .terminal-section {
+      padding: 7rem 0;
+    }
+    .terminal-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+      align-items: center;
+    }
+    .terminal-box {
+      background: #0c0c10;
+      border: 1px solid var(--border-red);
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    }
+    .terminal-bar {
+      background: #161620;
+      padding: .7rem 1rem;
+      display: flex; align-items: center; gap: .5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .term-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .term-dot.r { background: #ef4444; }
+    .term-dot.y { background: #f59e0b; }
+    .term-dot.g { background: #22c55e; }
+    .terminal-bar span:last-child {
+      margin-left: auto; font-size: .75rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .terminal-body {
+      padding: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem; line-height: 1.8;
+      color: var(--text-dim);
+    }
+    .terminal-body .prompt { color: var(--green); }
+    .terminal-body .cmd    { color: #fff; }
+    .terminal-body .output { color: var(--text-muted); }
+    .terminal-body .hl     { color: var(--red-light); font-weight: 600; }
+    .terminal-body .ok     { color: var(--green); }
+
+    .terminal-info h3 {
+      font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem;
+      letter-spacing: -.5px;
+    }
+    .terminal-info p {
+      color: var(--text-dim); margin-bottom: 1.2rem;
+      line-height: 1.7; font-size: .95rem;
+    }
+    .terminal-info ul {
+      list-style: none; margin-top: 1.5rem;
+    }
+    .terminal-info li {
+      padding: .5rem 0; font-size: .9rem; color: var(--text-dim);
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .terminal-info li .ck {
+      color: var(--green); font-weight: 700;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       MODULES SHOWCASE
+       ═══════════════════════════════════════════════════════════ */
+    .modules {
+      padding: 7rem 0;
+      background: var(--bg-soft);
+      border-top: 1px solid var(--border);
+    }
+    .modules-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;
+    }
+    .mod-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all .3s;
+    }
+    .mod-card:hover {
+      border-color: var(--border-red);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,.2);
+    }
+    .mod-icon {
+      font-size: 2rem; margin-bottom: .75rem;
+    }
+    .mod-card h4 {
+      font-size: .95rem; font-weight: 700; margin-bottom: .4rem;
+    }
+    .mod-card p {
+      font-size: .8rem; color: var(--text-muted);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       CTA
+       ═══════════════════════════════════════════════════════════ */
+    .cta {
+      padding: 7rem 0;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(220,38,38,.12), rgba(220,38,38,.03));
+      border: 2px solid var(--border-red);
+      border-radius: 1.5rem;
+      padding: 5rem 3rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(220,38,38,.1), transparent 70%);
+      pointer-events: none;
+    }
+    .cta-box h2 {
+      font-size: 2.2rem; font-weight: 900; margin-bottom: 1rem;
+      position: relative;
+    }
+    .cta-box p {
+      font-size: 1.05rem; color: var(--text-dim);
+      margin-bottom: 2.5rem; max-width: 500px; margin-left: auto; margin-right: auto;
+      position: relative;
+    }
+    .cta-box .btn { position: relative; }
+
+    /* ═══════════════════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 4rem 0 2rem;
+      color: var(--text-muted);
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    .footer-brand .logo-word { margin-bottom: .75rem; display: block; }
+    .footer-brand p { font-size: .85rem; color: var(--text-muted); line-height: 1.6; max-width: 280px; }
+    .footer-col h5 {
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.5px; color: var(--text-dim); margin-bottom: 1rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: .6rem; }
+    .footer-col a {
+      font-size: .9rem; color: var(--text-muted); transition: color .25s;
+    }
+    .footer-col a:hover { color: var(--red-light); }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: .8rem;
+    }
+    .footer-bottom-links { display: flex; gap: 1.5rem; }
+    .footer-bottom-links a { color: var(--text-muted); }
+    .footer-bottom-links a:hover { color: var(--red-light); }
+
+    /* ═══════════════════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .hero-grid, .terminal-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-visual { order: -1; }
+      .hero h1 { font-size: 2.5rem; }
+      .hero-text { text-align: center; }
+      .hero-desc { margin-left: auto; margin-right: auto; }
+      .hero-actions, .trust-row { justify-content: center; }
+      .logo-showcase { width: 380px; height: 380px; }
+      .logo-container { width: 380px; height: 380px; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .step-card::after { display: none; }
+      .modules-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .mobile-toggle { display: block; }
+      .hero { padding: 7rem 0 4rem; }
+      .hero h1 { font-size: 2rem; }
+      .logo-showcase { width: 280px; height: 280px; }
+      .logo-container { width: 280px; height: 280px; }
+      .features-grid, .stats-grid, .steps, .modules-grid { grid-template-columns: 1fr; }
+      .section-header h2 { font-size: 1.8rem; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+      .cta-box { padding: 3rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<!-- ════════════════════════════════════════════════════════
+     HEADER
+     ════════════════════════════════════════════════════════ -->
+<header id="header">
+  <div class="container header-inner">
+    <a href="#" class="logo-link">
+      <div class="logo-mark">🛡️</div>
+      <span class="logo-word">SynexGuard</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Recursos</a></li>
+      <li><a href="#how">Como Funciona</a></li>
+      <li><a href="#modules">Módulos</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="/login" class="btn-nav">Acessar Painel →</a></li>
+    </ul>
+    <button class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</button>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+
+      <!-- Text Side -->
+      <div class="hero-text">
+        <div class="hero-chip">
+          <span class="dot"></span>
+          Monitoramento em Tempo Real
+        </div>
+        <h1>
+          Proteja seus servidores com<br>
+          <span class="accent">SynexGuard</span>
+        </h1>
+        <p class="hero-desc">
+          Plataforma profissional de segurança e monitoramento para servidores Linux.
+          Detecção automática de ameaças, bloqueio inteligente de IPs e métricas
+          em tempo real — tudo em um único dashboard.
+        </p>
+        <div class="hero-actions">
+          <a href="/login" class="btn btn-red">📊 Acessar Dashboard</a>
+          <a href="#features" class="btn btn-outline">Explorar Recursos</a>
+        </div>
+        <div class="trust-row">
+          <div class="trust-item"><span class="ico">✓</span> Open Source</div>
+          <div class="trust-item"><span class="ico">✓</span> Auto-hospedado</div>
+          <div class="trust-item"><span class="ico">✓</span> Multi-tenant</div>
+          <div class="trust-item"><span class="ico">✓</span> API REST</div>
+        </div>
+      </div>
+
+      <!-- Logo Side -->
+      <div class="hero-visual">
+        <div class="logo-showcase">
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="ring"></div>
+          <div class="logo-container">
+            <!-- ╔══════════════════════════════════════════════════╗
+                 ║  LOGO 512×512                                    ║
+                 ║  Substitua o bloco abaixo por:                   ║
+                 ║  <img src="logo.png" alt="SynexGuard Logo">     ║
+                 ║  e remova .logo-placeholder-content              ║
+                 ╚══════════════════════════════════════════════════╝ -->
+            <img src="logo.png" alt="SynexGuard Logo">
+            <div class="logo-placeholder-content">
+              <div class="icon-big">🛡️</div>
+              <div class="label">Sua Logo Aqui</div>
+              <div class="size">512 × 512 px</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     STATS BAR
+     ════════════════════════════════════════════════════════ -->
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div>
+        <div class="stat-num">99.9%</div>
+        <div class="stat-label">Uptime Garantido</div>
+      </div>
+      <div>
+        <div class="stat-num">&lt;30s</div>
+        <div class="stat-label">Tempo de Detecção</div>
+      </div>
+      <div>
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Monitoramento Contínuo</div>
+      </div>
+      <div>
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Servidores Ilimitados</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     FEATURES
+     ════════════════════════════════════════════════════════ -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Recursos</div>
+      <h2>Tudo que você precisa para proteger seus servidores</h2>
+      <p>Uma suíte completa de segurança e monitoramento com detecção inteligente de ameaças</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <h3>Métricas em Tempo Real</h3>
+        <p>CPU, RAM, disco, conexões ativas e portas abertas atualizados a cada 10 segundos com gráficos interativos.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔒</div>
+        <h3>Detecção de SSH Brute-Force</h3>
+        <p>Identifica automaticamente padrões de ataque em tentativas de login SSH e aciona proteções em segundos.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🚫</div>
+        <h3>Bloqueio Automático de IPs</h3>
+        <p>IPs maliciosos são banidos automaticamente via iptables após ultrapassar o limite de tentativas configurado.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔔</div>
+        <h3>Central de Alertas</h3>
+        <p>Alertas categorizados por severidade (critical, warning, info) com ações de resolução integradas.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⚙️</div>
+        <h3>Motor de Automações</h3>
+        <p>Regras customizáveis com condições e ações automáticas. 5 regras pré-configuradas incluídas.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🌐</div>
+        <h3>Tráfego de Rede</h3>
+        <p>Monitore bytes e pacotes por interface de rede. Detecte spikes e padrões de DDoS instantaneamente.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔍</div>
+        <h3>Análise Forense</h3>
+        <p>Busca completa em eventos com filtros por tipo, severidade, hostname e período temporal.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📋</div>
+        <h3>Log Stream ao Vivo</h3>
+        <p>Acompanhe logs centralizados de todos os servidores em tempo real com auto-refresh de 5 segundos.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">👥</div>
+        <h3>Multi-Tenant</h3>
+        <p>Isolamento total entre clientes via tokens de agente. Cada usuário vê apenas seus próprios servidores.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     HOW IT WORKS
+     ════════════════════════════════════════════════════════ -->
+<section class="how-it-works" id="how">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Como Funciona</div>
+      <h2>Comece a proteger em 4 passos</h2>
+      <p>Do deploy ao monitoramento completo em minutos</p>
+    </div>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h4>Instale o Backend</h4>
+        <p>Clone o repositório, configure o ambiente Python e inicie o servidor FastAPI.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h4>Deploy do Frontend</h4>
+        <p>Build do React e configure Nginx como reverse proxy com SSL.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h4>Gere um Token</h4>
+        <p>No painel admin, crie um token de agente para isolar os dados do seu ambiente.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <h4>Instale o Agente</h4>
+        <p>Execute o one-liner no servidor Linux e comece a receber dados em 30 segundos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     TERMINAL PREVIEW
+     ════════════════════════════════════════════════════════ -->
+<section class="terminal-section">
+  <div class="container">
+    <div class="terminal-layout">
+      <div class="terminal-info">
+        <h3>Instalação em um comando</h3>
+        <p>
+          O agente SynexGuard é um binário leve em Go que coleta métricas, monitora logs de autenticação
+          e envia heartbeats ao backend a cada 30 segundos via mTLS.
+        </p>
+        <ul>
+          <li><span class="ck">✓</span> Compatível com Ubuntu, Debian, CentOS, RHEL</li>
+          <li><span class="ck">✓</span> Instalação automática via systemd</li>
+          <li><span class="ck">✓</span> Comunicação criptografada (mTLS)</li>
+          <li><span class="ck">✓</span> Consumo mínimo de recursos (~15MB RAM)</li>
+          <li><span class="ck">✓</span> Auto-restart e auto-update</li>
+        </ul>
+      </div>
+      <div class="terminal-box">
+        <div class="terminal-bar">
+          <span class="term-dot r"></span>
+          <span class="term-dot y"></span>
+          <span class="term-dot g"></span>
+          <span>bash — synexguard-agent</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">curl -sSL https://synex-guard.io/install.sh | sudo bash -s -- --token sg_abc123</span></div>
+          <div class="output">&nbsp;</div>
+          <div class="output">  ╔══════════════════════════════════════════╗</div>
+          <div class="output">  ║   <span class="hl">🛡️  SynexGuard Agent Installer</span>        ║</div>
+          <div class="output">  ╚══════════════════════════════════════════╝</div>
+          <div class="output">&nbsp;</div>
+          <div class="output">  [1/5] Checking dependencies... <span class="ok">✓</span></div>
+          <div class="output">  [2/5] Creating directories...  <span class="ok">✓</span></div>
+          <div class="output">  [3/5] Writing configuration... <span class="ok">✓</span></div>
+          <div class="output">  [4/5] Downloading agent...     <span class="ok">✓</span></div>
+          <div class="output">  [5/5] Configuring systemd...   <span class="ok">✓</span></div>
+          <div class="output">&nbsp;</div>
+          <div class="output">  <span class="ok">✅ SynexGuard Agent installed and running!</span></div>
+          <div class="output">&nbsp;</div>
+          <div><span class="prompt">$</span> <span class="cmd">sudo systemctl status synexguard-agent</span></div>
+          <div class="output">  ● synexguard-agent.service - SynexGuard Agent</div>
+          <div class="output">     Active: <span class="ok">active (running)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     MODULES SHOWCASE
+     ════════════════════════════════════════════════════════ -->
+<section class="modules" id="modules">
+  <div class="container">
+    <div class="section-header">
+      <div class="tag">Módulos</div>
+      <h2>8 módulos integrados</h2>
+      <p>Cada módulo fornece visibilidade e controle sobre um aspecto do seu ambiente</p>
+    </div>
+    <div class="modules-grid">
+      <div class="mod-card">
+        <div class="mod-icon">🔒</div>
+        <h4>Segurança</h4>
+        <p>Tentativas de login SSH</p>
+      </div>
+      <div class="mod-card">
+        <div class="mod-icon">🚫</div>
+        <h4>IPs Banidos</h4>
+        <p>Gestão de bloqueios</p>
+      </div>
+      <div class="mod-card">
+        <div class="mod-icon">🌐</div>
+        <h4>Tráfego</h4>
+        <p>Bytes e pacotes por interface</p>
+      </div>
+      <div class="mod-card">
+        <div class="mod-icon">📈</div>
+        <h4>Métricas</h4>
+        <p>CPU, RAM, disco em tempo real</p>
+      </div>
+      <div class="mod-card">
+        <div class="mod-icon">⚙️</div>
+        <h4>Automações</h4>
+        <p>Regras de proteção automática</p>
+      </div>
+      <div class="mod-card">
+        <div class="mod-icon">🔔</div>
+        <h4>Alertas</h4>
+        <p>Central com severidade</p>
+      </div>
+      <div class="mod-card">
+        <div class="mod-icon">🔍</div>
+        <h4>Forense</h4>
+        <p>Análise completa de eventos</p>
+      </div>
+      <div class="mod-card">
+        <div class="mod-icon">📋</div>
+        <h4>Logs</h4>
+        <p>Stream ao vivo centralizado</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     CTA
+     ════════════════════════════════════════════════════════ -->
+<section class="cta">
+  <div class="container">
+    <div class="cta-box">
+      <h2>Pronto para proteger seus servidores?</h2>
+      <p>Comece agora com o SynexGuard. Deploy próprio, controle total, sem limites.</p>
+      <a href="/login" class="btn btn-red">🚀 Acessar Dashboard</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="logo-word">🛡️ SynexGuard</span>
+        <p>Plataforma profissional de segurança e monitoramento para servidores Linux. Desenvolvido com Python, React e Go.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Produto</h5>
+        <ul>
+          <li><a href="#features">Recursos</a></li>
+          <li><a href="#modules">Módulos</a></li>
+          <li><a href="#how">Como Funciona</a></li>
+          <li><a href="/login">Dashboard</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Documentação</h5>
+        <ul>
+          <li><a href="docs.html">Guia de Instalação</a></li>
+          <li><a href="docs.html">API Reference</a></li>
+          <li><a href="docs.html">Configuração</a></li>
+          <li><a href="docs.html">Troubleshooting</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Suporte</h5>
+        <ul>
+          <li><a href="mailto:support@synexguard.io">Email</a></li>
+          <li><a href="#">Discord</a></li>
+          <li><a href="#">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 SynexGuard. Todos os direitos reservados.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacidade</a>
+        <a href="#">Termos</a>
+        <a href="#">Segurança</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Header scroll effect
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+
+  // Auto-show logo image if it loads, hide placeholder
+  const logoImg = document.querySelector('.logo-container img');
+  if (logoImg) {
+    logoImg.addEventListener('load', () => {
+      logoImg.style.display = 'block';
+      const ph = document.querySelector('.logo-placeholder-content');
+      if (ph) ph.style.display = 'none';
+    });
+    logoImg.addEventListener('error', () => {
+      logoImg.style.display = 'none';
+    });
+  }
+</script>
+
+</body>
+</html>

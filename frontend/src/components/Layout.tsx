@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -19,8 +19,17 @@ import {
   Shield,
   Menu,
   Crown,
+  Sun,
+  Moon,
+  Monitor,
 } from 'lucide-react'
 import { useAuth } from '../auth'
+import { useTheme } from '../theme'
+import { useSessionTimeout } from '../hooks/useSessionTimeout'
+import { useKeyboardShortcuts, createCommonShortcuts } from '../hooks/useKeyboardShortcuts'
+import { SessionTimeoutModal } from './SessionTimeoutModal'
+import GlobalSearch from './GlobalSearch'
+import NotificationPanel, { createNotification } from './NotificationPanel'
 
 const nav = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
@@ -41,18 +50,88 @@ const nav = [
 const adminNav = [
   { type: 'divider' as const },
   { label: 'Administração', icon: Crown, path: '/admin' },
+  { label: 'Logs Auditoria', icon: ScrollText, path: '/audit-logs' },
 ] as const
 
 export default function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth()
+  const { theme, resolved, setTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [themeMenuOpen, setThemeMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [notifications, setNotifications] = useState<any[]>([])
+
+  // Add some demo notifications on mount
+  useEffect(() => {
+    const demoNotifications = [
+      createNotification(
+        'critical',
+        'Servidor Crítico Offline',
+        'O servidor de produção srv-prod-01 está offline há 5 minutos',
+        [
+          { label: 'Verificar', action: () => navigate('/servers'), primary: true },
+          { label: 'Ignorar', action: () => {} }
+        ]
+      ),
+      createNotification(
+        'info',
+        'Atualização Disponível',
+        'Uma nova versão do SynexGuard está disponível (v2.1.0)',
+        [
+          { label: 'Ver Detalhes', action: () => navigate('/settings') }
+        ]
+      )
+    ]
+    setNotifications(demoNotifications)
+  }, [])
+
+  // Session timeout management
+  const {
+    showWarning,
+    timeLeft,
+    extendSession,
+    updateLastActivity
+  } = useSessionTimeout({
+    timeoutMinutes: 30,
+    warningMinutes: 25
+  })
+
+  const handleTimeoutLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
+  // Keyboard shortcuts
+  const shortcuts = createCommonShortcuts({
+    openSearch: () => setSearchOpen(true),
+    openSettings: () => navigate('/settings'),
+    goToDashboard: () => navigate('/'),
+    goToServers: () => navigate('/servers'),
+    goToAlerts: () => navigate('/alerts'),
+    toggleTheme: () => setTheme(resolved === 'dark' ? 'light' : 'dark'),
+    logout: () => handleLogout()
+  })
+
+  useKeyboardShortcuts(shortcuts)
 
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const handleMarkAsRead = (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
+  }
+
+  const handleMarkAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+  }
+
+  const handleRemoveNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id))
   }
 
   const initials = user?.nome
@@ -81,10 +160,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         {/* Logo */}
         <div className={`h-16 flex items-center border-b border-white/5 ${collapsed ? 'justify-center px-2' : 'px-5'}`}>
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-ng-neon/10 border border-ng-neon/20 flex items-center justify-center flex-shrink-0">
-              <Shield className="w-4 h-4 text-ng-neon" />
-            </div>
-            {!collapsed && <span className="text-white font-bold text-lg truncate">NodeGuard</span>}
+            <img
+              src="/synex.png"
+              alt="Synex Logo"
+              className="w-8 h-8 object-contain flex-shrink-0"
+            />
+            {!collapsed && <span className="text-white font-bold text-lg truncate">SynexGuard</span>}
           </div>
           <button
             onClick={() => setCollapsed(!collapsed)}
@@ -165,21 +246,63 @@ export default function Layout({ children }: { children: ReactNode }) {
               {([
                 ...nav,
                 ...(user?.role === 'superadmin' ? adminNav : []),
-              ].find((n) => 'path' in n && (n as any).path === location.pathname) as any)?.label || 'NodeGuard'}
+              ].find((n) => 'path' in n && (n as any).path === location.pathname) as any)?.label || 'SynexGuard'}
             </h2>
           </div>
           <div className="flex items-center gap-3">
             <div className="relative hidden sm:block">
               <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
-                placeholder="Buscar..."
+                placeholder="Buscar... (Ctrl+K)"
                 className="bg-white/5 border border-white/10 rounded-lg pl-9 pr-4 py-1.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-ng-neon/30 w-48 transition-all focus:w-64"
+                onFocus={() => setSearchOpen(true)}
+                readOnly
               />
             </div>
-            <button className="relative text-slate-400 hover:text-white transition-colors p-1">
-              <Bell className="w-5 h-5" />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-ng-danger rounded-full" />
-            </button>
+
+            {/* Theme Toggle */}
+            <div className="relative">
+              <button
+                onClick={() => setThemeMenuOpen(!themeMenuOpen)}
+                className="text-slate-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/5"
+                title={`Tema: ${theme === 'system' ? 'Sistema' : theme === 'dark' ? 'Escuro' : 'Claro'}`}
+              >
+                {resolved === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              </button>
+              {themeMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setThemeMenuOpen(false)} />
+                  <div className="absolute right-0 top-full mt-2 z-50 bg-ng-card border rounded-lg shadow-xl py-1 min-w-[160px]" style={{ borderColor: 'var(--ng-border)' }}>
+                    <button
+                      onClick={() => { setTheme('system'); setThemeMenuOpen(false) }}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${theme === 'system' ? 'text-ng-neon bg-ng-neon/10' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                    >
+                      <Monitor className="w-4 h-4" /> Sistema
+                    </button>
+                    <button
+                      onClick={() => { setTheme('light'); setThemeMenuOpen(false) }}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${theme === 'light' ? 'text-ng-neon bg-ng-neon/10' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                    >
+                      <Sun className="w-4 h-4" /> Claro
+                    </button>
+                    <button
+                      onClick={() => { setTheme('dark'); setThemeMenuOpen(false) }}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors ${theme === 'dark' ? 'text-ng-neon bg-ng-neon/10' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+                    >
+                      <Moon className="w-4 h-4" /> Escuro
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <NotificationPanel
+              notifications={notifications}
+              onMarkAsRead={handleMarkAsRead}
+              onMarkAllAsRead={handleMarkAllAsRead}
+              onRemove={handleRemoveNotification}
+            />
+
             <button
               onClick={() => navigate('/settings')}
               className="w-8 h-8 rounded-lg bg-ng-neon/10 border border-ng-neon/20 flex items-center justify-center text-ng-neon text-xs font-bold hover:bg-ng-neon/20 transition-colors"
@@ -192,6 +315,20 @@ export default function Layout({ children }: { children: ReactNode }) {
         {/* Page content */}
         <main className="flex-1 p-6">{children}</main>
       </div>
+
+      {/* Session Timeout Modal */}
+      <SessionTimeoutModal
+        isOpen={showWarning}
+        timeLeft={timeLeft}
+        onExtend={extendSession}
+        onLogout={handleTimeoutLogout}
+      />
+
+      {/* Global Search Modal */}
+      <GlobalSearch
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
     </div>
   )
 }

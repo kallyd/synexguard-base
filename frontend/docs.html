@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SynexGuard - Documentação Completa</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #09090b 0%, #0f0f15 100%);
+      color: #e4e4e7;
+      line-height: 1.6;
+    }
+    
+    header {
+      background: linear-gradient(135deg, rgba(17,17,23,0.95) 0%, rgba(15,15,21,0.95) 100%);
+      border-bottom: 1px solid rgba(220,38,38,0.2);
+      padding: 1.5rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #DC2626;
+      text-decoration: none;
+    }
+    
+    nav { display: flex; gap: 2rem; }
+    nav a {
+      color: #a1a1aa;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: #DC2626; }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 3rem 2.5rem;
+    }
+    
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 60px;
+      width: 280px;
+      height: calc(100vh - 60px);
+      background: linear-gradient(180deg, rgba(17,17,23,0.8) 0%, rgba(15,15,21,0.8) 100%);
+      border-right: 2px solid rgba(220,38,38,0.15);
+      padding: 2rem 0;
+      overflow-y: auto;
+      backdrop-filter: blur(10px);
+    }
+    
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0 1rem;
+    }
+    
+    .sidebar-nav a {
+      color: #a1a1aa;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.75rem;
+      transition: all 0.3s;
+      display: block;
+      border-left: 3px solid transparent;
+      margin-left: -3px;
+    }
+    
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+      color: #DC2626;
+      background: rgba(220,38,38,0.15);
+      border-left-color: #DC2626;
+      padding-left: calc(1.25rem + 2px);
+    }
+    
+    .main-content {
+      margin-left: 280px;
+      min-height: 100vh;
+    }
+    
+    section {
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+    
+    section.active { display: block; }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    h1 {
+      font-size: 2.75rem;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #DC2626 0%, #ef4444 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      border-bottom: 3px solid rgba(220,38,38,0.3);
+      padding-bottom: 1.5rem;
+      font-weight: 900;
+    }
+    
+    h2 {
+      font-size: 1.9rem;
+      margin-top: 2.5rem;
+      margin-bottom: 1.25rem;
+      color: #DC2626;
+      font-weight: 800;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(220,38,38,0.2);
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: #f4f4f5;
+    }
+    
+    h4 {
+      font-size: 1rem;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      color: #e4e4e7;
+      font-weight: 600;
+    }
+    
+    p {
+      margin-bottom: 1rem;
+      color: #d4d4d8;
+    }
+    
+    ul, ol {
+      margin-left: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    li {
+      margin-bottom: 0.5rem;
+    }
+    
+    code {
+      background: rgba(220,38,38,0.1);
+      color: #DC2626;
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+    }
+    
+    pre {
+      background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(10,10,15,0.5) 100%);
+      border: 1px solid rgba(220,38,38,0.2);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      color: #22c55e;
+      position: relative;
+    }
+    
+    pre::before {
+      content: '$ ';
+      color: #71717a;
+      font-weight: 600;
+    }
+    
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+    
+    .info {
+      background: linear-gradient(135deg, rgba(220,38,38,0.15) 0%, rgba(220,38,38,0.05) 100%);
+      border-left: 5px solid #DC2626;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0.75rem;
+    }
+    
+    .success {
+      background: linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(34,197,94,0.05) 100%);
+      border-left: 5px solid #22c55e;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0.75rem;
+    }
+    
+    .warning {
+      background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.05) 100%);
+      border-left: 5px solid #F59E0B;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0.75rem;
+    }
+    
+    .endpoint {
+      background: linear-gradient(135deg, rgba(17,17,23,0.8) 0%, rgba(20,20,28,0.6) 100%);
+      border: 2px solid rgba(220,38,38,0.25);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s;
+    }
+    
+    .endpoint:hover {
+      border-color: rgba(220,38,38,0.5);
+      box-shadow: 0 8px 25px rgba(220,38,38,0.1);
+      transform: translateY(-2px);
+    }
+    
+    .method {
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      border-radius: 0.375rem;
+      font-weight: 700;
+      font-size: 0.75rem;
+      margin-right: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .method.get { background: rgba(59,130,246,0.3); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4); }
+    .method.post { background: rgba(34,197,94,0.3); color: #4ade80; border: 1px solid rgba(34,197,94,0.4); }
+    .method.put { background: rgba(245,158,11,0.3); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+    .method.delete { background: rgba(239,68,68,0.3); color: #f87171; border: 1px solid rgba(239,68,68,0.4); }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+    
+    th {
+      background: linear-gradient(135deg, rgba(220,38,38,0.2) 0%, rgba(220,38,38,0.1) 100%);
+      border: 1px solid rgba(220,38,38,0.2);
+      padding: 1rem 0.75rem;
+      text-align: left;
+      font-weight: 700;
+      color: #DC2626;
+    }
+    
+    td {
+      border: 1px solid rgba(220,38,38,0.1);
+      padding: 0.9rem 0.75rem;
+      background: rgba(17,17,23,0.3);
+    }
+    
+    tr:hover td {
+      background: rgba(220,38,38,0.08);
+    }
+    
+    .step {
+      background: linear-gradient(135deg, rgba(17,17,23,0.7) 0%, rgba(20,20,28,0.5) 100%);
+      border-left: 5px solid #DC2626;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 0.75rem;
+      transition: all 0.3s;
+    }
+    
+    .step:hover {
+      background: linear-gradient(135deg, rgba(17,17,23,0.85) 0%, rgba(220,38,38,0.05) 100%);
+      box-shadow: 0 8px 20px rgba(220,38,38,0.08);
+      transform: translateX(4px);
+    }
+    
+    .step-number {
+      display: inline-block;
+      background: #DC2626;
+      color: #09090b;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 2rem;
+      font-weight: 900;
+      margin-right: 0.5rem;
+    }
+    
+    footer {
+      background: linear-gradient(180deg, rgba(17,17,23,0.9) 0%, rgba(0,0,0,0.6) 100%);
+      border-top: 2px solid rgba(220,38,38,0.2);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: #71717a;
+      margin-left: 280px;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; }
+      footer { margin-left: 0; }
+      nav { display: none; }
+      h1 { font-size: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="#" class="logo">🛡️ SynexGuard Docs</a>
+      <nav>
+        <a href="#" onclick="showSection('overview')">Visão Geral</a>
+        <a href="#" onclick="showSection('installation')">Instalação</a>
+        <a href="#" onclick="showSection('api')">API</a>
+        <a href="#" onclick="showSection('config')">Configuração</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="sidebar">
+    <div class="sidebar-nav">
+      <a href="#" onclick="showSection('overview')" class="active" data-section="overview">📋 Visão Geral</a>
+      <a href="#" onclick="showSection('installation')" data-section="installation">⚙️ Instalação</a>
+      <a href="#" onclick="showSection('api')" data-section="api">🔌 API REST</a>
+      <a href="#" onclick="showSection('config')" data-section="config">⚙️ Configuração</a>
+      <a href="#" onclick="showSection('agent')" data-section="agent">🤖 Agente</a>
+      <a href="#" onclick="showSection('automations')" data-section="automations">⚡ Automações</a>
+      <a href="#" onclick="showSection('troubleshooting')" data-section="troubleshooting">🔧 Troubleshooting</a>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <!-- OVERVIEW -->
+    <section id="overview" class="active">
+      <div class="container">
+        <h1>📋 Visão Geral do SynexGuard</h1>
+        
+        <p>SynexGuard é uma plataforma profissional de monitoramento e segurança em tempo real para servidores Linux. O sistema detecta automaticamente ameaças, bloqueia IPs maliciosos e gera alertas de segurança.</p>
+        
+        <h2>Arquitetura</h2>
+        <p>O SynexGuard é composto por três componentes principais:</p>
+        <ul>
+          <li><strong>Backend (FastAPI)</strong>: API REST que gerencia dados e automações</li>
+          <li><strong>Frontend (React)</strong>: Dashboard intuitivo e responsivo</li>
+          <li><strong>Agente (Go)</strong>: Serviço que roda nos servidores monitorados</li>
+        </ul>
+        
+        <h2>Características Principais</h2>
+        <ul>
+          <li>✅ Detecção automática de SSH brute-force</li>
+          <li>✅ Bloqueio automático de IPs maliciosos</li>
+          <li>✅ Monitoramento de CPU, RAM, disco em tempo real</li>
+          <li>✅ Análise de tráfego de rede por interface</li>
+          <li>✅ Alertas críticos e notificações</li>
+          <li>✅ Automações customizáveis</li>
+          <li>✅ Autenticação JWT com multi-tenancy</li>
+          <li>✅ Dashboard centralizado</li>
+        </ul>
+        
+        <h2>Requisitos Mínimos</h2>
+        <table>
+          <tr><th>Componente</th><th>Requisito</th></tr>
+          <tr><td>Backend</td><td>Python 3.10+, 2GB RAM, 5GB disco</td></tr>
+          <tr><td>Frontend</td><td>Node.js 18+, navegador moderno</td></tr>
+          <tr><td>Agente</td><td>Go 1.20+, Linux, 100MB disco</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- INSTALLATION -->
+    <section id="installation">
+      <div class="container">
+        <h1>⚙️ Instalação Completa no Linux</h1>
+        
+        <p>Este guia detalha a instalação completa do SynexGuard em um servidor Linux.</p>
+
+        <h2>Pré-requisitos</h2>
+        <div class="step">
+          <strong>Verifique se você tem:</strong>
+          <ul>
+            <li>Ubuntu 20.04+ ou similar (Linux com systemd)</li>
+            <li>Acesso root ou sudo</li>
+            <li>Conexão à internet</li>
+            <li>Portas 80, 443, 3000 (frontend), 8000 (backend) disponíveis</li>
+          </ul>
+        </div>
+
+        <h2>Parte 1: Preparação do Sistema</h2>
+
+        <div class="step">
+          <span class="step-number">1</span>
+          <strong>Atualize o sistema</strong>
+          <pre><code>sudo apt update && sudo apt upgrade -y</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">2</span>
+          <strong>Instale dependências básicas</strong>
+          <pre><code>sudo apt install -y \
+  curl wget git vim nano \
+  build-essential python3-dev python3-pip \
+  nodejs npm docker.io docker-compose \
+  postgresql postgresql-contrib \
+  nginx certbot python3-certbot-nginx</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">3</span>
+          <strong>Inicie o Docker e PostgreSQL</strong>
+          <pre><code>sudo systemctl start docker postgresql
+sudo systemctl enable docker postgresql
+sudo usermod -aG docker $USER
+newgrp docker</code></pre>
+        </div>
+
+        <h2>Parte 2: Clone o Repositório</h2>
+
+        <div class="step">
+          <span class="step-number">4</span>
+          <strong>Clone o SynexGuard</strong>
+          <pre><code>cd /opt
+sudo git clone https://github.com/seu-usuario/synex-guard.git
+sudo chown -R $USER:$USER synex-guard
+cd synex-guard</code></pre>
+        </div>
+
+        <h2>Parte 3: Configurar o Backend</h2>
+
+        <div class="step">
+          <span class="step-number">5</span>
+          <strong>Instale dependências Python</strong>
+          <pre><code>cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">6</span>
+          <strong>Configure variáveis de ambiente</strong>
+          <pre><code>cat > .env << 'EOF'
+# Backend Config
+DATABASE_URL=postgresql://synexguard:synexguard@localhost:5432/synexguard
+SECRET_KEY=your-super-secret-key-change-this-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# CORS
+FRONTEND_URL=http://localhost:3000
+
+# Rate Limiting
+RATE_LIMIT_REQUESTS=100
+RATE_LIMIT_WINDOW=60
+EOF</code></pre>
+        </div>
+
+        <div class="warning">
+          <strong>⚠️ Importante:</strong> Mude o <code>SECRET_KEY</code> para uma chave aleatória segura em produção:
+          <pre><code>python3 -c "import secrets; print(secrets.token_hex(32))"</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">7</span>
+          <strong>Crie banco de dados PostgreSQL</strong>
+          <pre><code>sudo -u postgres psql << 'SQL'
+CREATE USER synexguard WITH PASSWORD 'synexguard';
+CREATE DATABASE synexguard OWNER synexguard;
+GRANT ALL PRIVILEGES ON DATABASE synexguard TO synexguard;
+SELECT version();
+SQL</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">8</span>
+          <strong>Execute migrations do banco</strong>
+          <pre><code>psql -U synexguard -d synexguard -f ../db/schema.sql</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">9</span>
+          <strong>Teste o backend localmente</strong>
+          <pre><code>python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000</code></pre>
+          <p>Visite <code>http://localhost:8000/health</code> — deve retornar <code>{"status":"ok"}</code></p>
+        </div>
+
+        <h2>Parte 4: Configurar o Frontend</h2>
+
+        <div class="step">
+          <span class="step-number">10</span>
+          <strong>Instale dependências Node.js</strong>
+          <pre><code>cd ../frontend
+npm install</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">11</span>
+          <strong>Configure variáveis do frontend</strong>
+          <pre><code>cat > .env << 'EOF'
+VITE_API_URL=http://localhost:8000/api/v1
+EOF</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">12</span>
+          <strong>Build o frontend para produção</strong>
+          <pre><code>npm run build</code></pre>
+        </div>
+
+        <h2>Parte 5: Deploy com Systemd</h2>
+
+        <div class="step">
+          <span class="step-number">13</span>
+          <strong>Crie serviço systemd para Backend</strong>
+          <pre><code>sudo tee /etc/systemd/system/synexguard-backend.service > /dev/null << 'EOF'
+[Unit]
+Description=SynexGuard Backend API
+After=network.target postgresql.service
+
+[Service]
+Type=notify
+User=nodeguard
+WorkingDirectory=/opt/synexguard/backend
+Environment="PATH=/opt/synexguard/backend/venv/bin"
+ExecStart=/opt/nodeguard/backend/venv/bin/python -m uvicorn \
+  app.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">14</span>
+          <strong>Crie serviço systemd para Frontend</strong>
+          <pre><code>sudo tee /etc/systemd/system/synexguard-frontend.service > /dev/null << 'EOF'
+[Unit]
+Description=SynexGuard Frontend Web Server
+After=network.target
+
+[Service]
+Type=simple
+User=nodeguard
+WorkingDirectory=/opt/synexguard/frontend
+ExecStart=/usr/bin/npx serve -s dist -l 3000
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">15</span>
+          <strong>Crie usuário SynexGuard</strong>
+          <pre><code>sudo useradd -r -s /bin/bash synexguard
+sudo chown -R synexguard:synexguard /opt/synexguard
+sudo chown -R synexguard:synexguard /var/log/synexguard</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">16</span>
+          <strong>Inicie os serviços</strong>
+          <pre><code>sudo systemctl daemon-reload
+sudo systemctl start synexguard-backend synexguard-frontend
+sudo systemctl enable synexguard-backend synexguard-frontend
+sudo systemctl status synexguard-backend synexguard-frontend</code></pre>
+        </div>
+
+        <h2>Parte 6: Configurar Nginx (Reverse Proxy)</h2>
+
+        <div class="step">
+          <span class="step-number">17</span>
+          <strong>Configure Nginx</strong>
+          <pre><code>sudo tee /etc/nginx/sites-available/synexguard > /dev/null << 'EOF'
+upstream backend {
+    server localhost:8000;
+}
+
+upstream frontend {
+    server localhost:3000;
+}
+
+server {
+    listen 80;
+    server_name seu-dominio.com;
+    client_max_body_size 10M;
+
+    # API Backend
+    location /api/ {
+        proxy_pass http://backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Frontend
+    location / {
+        proxy_pass http://frontend;
+        proxy_set_header Host $host;
+    }
+}
+EOF</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">18</span>
+          <strong>Ative o Nginx</strong>
+          <pre><code>sudo ln -s /etc/nginx/sites-available/synexguard /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t
+sudo systemctl restart nginx</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">19</span>
+          <strong>Configure SSL com Let's Encrypt</strong>
+          <pre><code>sudo certbot --nginx -d seu-dominio.com</code></pre>
+        </div>
+
+        <h2>Parte 7: Acesse o Sistema</h2>
+
+        <div class="success">
+          <strong>✅ Instalação concluída!</strong>
+          <ul>
+            <li>Acesse: <code>https://seu-dominio.com</code></li>
+            <li>Credenciais padrão: <code>admin@synex-guard.io / admin123</code></li>
+            <li>API disponível em: <code>https://seu-dominio.com/api/v1</code></li>
+          </ul>
+        </div>
+
+        <h2>Parte 8: Instale o Agente nos Servidores</h2>
+
+        <p>Para monitorar seus servidores, instale o agente usando o one-liner:</p>
+
+        <div class="step">
+          <strong>No servidor a ser monitorado, execute:</strong>
+          <pre><code>curl -fsSL https://seu-dominio.com/install-agent.sh | bash -s -- \
+  --token SEU_TOKEN_AQUI \
+  --server https://seu-dominio.com</code></pre>
+        </div>
+
+        <div class="info">
+          <strong>ℹ️ Como obter o token:</strong>
+          <ol>
+            <li>Acesse o dashboard SynexGuard</li>
+            <li>Vá para "Tokens"</li>
+            <li>Clique em "Criar novo token"</li>
+            <li>Copie o token e coloque no comando acima</li>
+          </ol>
+        </div>
+
+        <h2>Verificar Instalação</h2>
+
+        <div class="step">
+          <strong>Verificar logs do backend:</strong>
+          <pre><code>sudo journalctl -u synexguard-backend -f</code></pre>
+        </div>
+
+        <div class="step">
+          <strong>Verificar status dos serviços:</strong>
+          <pre><code>sudo systemctl status synexguard-backend synexguard-frontend</code></pre>
+        </div>
+
+        <div class="step">
+          <strong>Testar API:</strong>
+          <pre><code>curl -X GET http://localhost:8000/health</code></pre>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- API -->
+    <section id="api">
+      <div class="container">
+        <h1>🔌 API REST Completa</h1>
+
+        <h2>Autenticação</h2>
+        <p>Todos os endpoints (exceto <code>/auth/register</code> e <code>/auth/login</code>) requerem autenticação JWT.</p>
+
+        <pre><code>Authorization: Bearer TOKEN_JWT</code></pre>
+
+        <h3>Login</h3>
+        <div class="endpoint">
+          <span class="method post">POST</span> <code>/auth/login</code>
+          <pre><code>{
+  "email": "admin@synex-guard.io",
+  "password": "admin123"
+}
+
+Resposta:
+{
+  "access_token": "eyJ...",
+  "token_type": "bearer",
+  "user": {
+    "id": 1,
+    "email": "admin@synex-guard.io",
+    "full_name": "Administrador"
+  }
+}</code></pre>
+        </div>
+
+        <h2>Servidores</h2>
+
+        <div class="endpoint">
+          <span class="method get">GET</span> <code>/servers</code>
+          <p>Lista todos os servidores do usuário</p>
+          <pre><code>Resposta:
+{
+  "items": [
+    {
+      "id": 1,
+      "hostname": "srv-prod-01",
+      "ip_publico": "123.45.67.89",
+      "os_info": "Linux 5.15.0",
+      "cpu": 45.2,
+      "ram": 62.1,
+      "disk": 73.5,
+      "status": "online",
+      "ultimo_heartbeat": "2026-02-13T14:23:00Z"
+    }
+  ]
+}</code></pre>
+        </div>
+
+        <div class="endpoint">
+          <span class="method get">GET</span> <code>/servers/stats</code>
+          <p>Retorna estatísticas consolidadas do dashboard</p>
+          <pre><code>{
+  "ataques_detectados": 5,
+  "ips_banidos": 3,
+  "servidores_online": 4,
+  "servidores_total": 5,
+  "alertas_ativos": 2,
+  "cpu_medio": 32.1,
+  "ram_medio": 55.3,
+  "disco_medio": 48.7
+}</code></pre>
+        </div>
+
+        <h2>Eventos / Logs</h2>
+
+        <div class="endpoint">
+          <span class="method get">GET</span> <code>/events?limit=50&tipo=ssh_login_failed&severidade=critical</code>
+          <p>Lista eventos com filtros opcionais. Query params: <code>limit</code>, <code>tipo</code>, <code>severidade</code></p>
+        </div>
+
+        <div class="endpoint">
+          <span class="method post">POST</span> <code>/agents/heartbeat</code>
+          <p>Enviado pelo agente a cada 30 segundos</p>
+          <pre><code>Body:
+{
+  "hostname": "srv-prod-01",
+  "ip_publico": "123.45.67.89",
+  "os_info": "Linux 5.15.0-89-generic",
+  "cpu": 45.2,
+  "ram": 62.1,
+  "disk": 73.5,
+  "uptime": "45 days, 12:34:56",
+  "conns": 245,
+  "open_ports": [22, 80, 443, 3306],
+  "interfaces": [
+    {
+      "name": "eth0",
+      "bytes_in": 1234567890,
+      "bytes_out": 987654321,
+      "packets_in": 1000000,
+      "packets_out": 800000,
+      "status": "up"
+    }
+  ],
+  "login_attempts": [
+    {
+      "user": "root",
+      "origem_ip": "203.0.113.14",
+      "method": "SSH",
+      "success": false
+    }
+  ],
+  "events": [
+    {
+      "tipo": "ssh_login_failed",
+      "severidade": "warning",
+      "mensagem": "Failed login attempt for root from 203.0.113.14"
+    }
+  ]
+}</code></pre>
+        </div>
+
+        <h2>Segurança</h2>
+
+        <div class="endpoint">
+          <span class="method get">GET</span> <code>/security/login-attempts?limit=50</code>
+          <p>Lista tentativas de login com estatísticas</p>
+        </div>
+
+        <div class="endpoint">
+          <span class="method get">GET</span> <code>/security/banned-ips</code>
+          <p>Lista IPs banidos</p>
+        </div>
+
+        <div class="endpoint">
+          <span class="method post">POST</span> <code>/security/banned-ips</code>
+          <p>Bani um IP manualmente</p>
+          <pre><code>{
+  "ip": "203.0.113.14",
+  "motivo": "Tentativa de exploit",
+  "expira": "24h"
+}</code></pre>
+        </div>
+
+        <div class="endpoint">
+          <span class="method delete">DELETE</span> <code>/security/banned-ips/{ip}</code>
+          <p>Remove ban de um IP</p>
+        </div>
+
+        <h2>Alertas</h2>
+
+        <div class="endpoint">
+          <span class="method get">GET</span> <code>/alerts?status=ativo</code>
+          <p>Lista alertas (query param: <code>status=ativo|resolvido</code>)</p>
+        </div>
+
+        <div class="endpoint">
+          <span class="method put">PUT</span> <code>/alerts/{id}/resolve</code>
+          <p>Marca um alerta como resolvido</p>
+        </div>
+
+        <h2>Automações</h2>
+
+        <div class="endpoint">
+          <span class="method get">GET</span> <code>/automations/rules</code>
+          <p>Lista todas as regras de automação</p>
+        </div>
+
+        <div class="endpoint">
+          <span class="method post">POST</span> <code>/automations/rules</code>
+          <p>Cria nova regra de automação</p>
+          <pre><code>{
+  "nome": "Block SSH > 3 failures",
+  "condicao": "ssh_login_failed >= 3",
+  "condicao_tipo": "ssh_login_failed",
+  "condicao_threshold": 3,
+  "acao": "Ban IP 24h",
+  "acao_type": "ban_ip",
+  "acao_duration": "24h"
+}</code></pre>
+        </div>
+
+        <div class="endpoint">
+          <span class="method put">PUT</span> <code>/automations/rules/{id}/toggle</code>
+          <p>Ativa/desativa uma regra</p>
+        </div>
+
+        <h2>Tokens (Agentes)</h2>
+
+        <div class="endpoint">
+          <span class="method get">GET</span> <code>/tokens</code>
+          <p>Lista tokens para agentes</p>
+        </div>
+
+        <div class="endpoint">
+          <span class="method post">POST</span> <code>/tokens</code>
+          <p>Cria novo token para agente</p>
+          <pre><code>{
+  "nome": "srv-prod-01",
+  "descricao": "Token para servidor de produção"
+}</code></pre>
+        </div>
+
+        <div class="endpoint">
+          <span class="method delete">DELETE</span> <code>/tokens/{id}</code>
+          <p>Revoga um token</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CONFIG -->
+    <section id="config">
+      <div class="container">
+        <h1>⚙️ Configuração Avançada</h1>
+
+        <h2>Backend (.env)</h2>
+
+        <table>
+          <tr><th>Variável</th><th>Padrão</th><th>Descrição</th></tr>
+          <tr><td><code>DATABASE_URL</code></td><td>postgresql://...</td><td>Connection string PostgreSQL</td></tr>
+          <tr><td><code>SECRET_KEY</code></td><td>-</td><td>Chave secreta para JWT (MUDE em produção!)</td></tr>
+          <tr><td><code>ALGORITHM</code></td><td>HS256</td><td>Algoritmo JWT</td></tr>
+          <tr><td><code>ACCESS_TOKEN_EXPIRE_MINUTES</code></td><td>30</td><td>Expiração do token em minutos</td></tr>
+          <tr><td><code>RATE_LIMIT_REQUESTS</code></td><td>100</td><td>Requisições por janela</td></tr>
+          <tr><td><code>RATE_LIMIT_WINDOW</code></td><td>60</td><td>Janela em segundos</td></tr>
+        </table>
+
+        <h2>Frontend (.env)</h2>
+
+        <table>
+          <tr><th>Variável</th><th>Padrão</th><th>Descrição</th></tr>
+          <tr><td><code>VITE_API_URL</code></td><td>http://localhost:8000/api/v1</td><td>URL da API backend</td></tr>
+        </table>
+
+        <h2>Agente (config.yaml)</h2>
+
+        <pre><code>server: https://seu-dominio.com
+token: SEU_TOKEN_JWT
+heartbeat_interval: 30  # segundos
+log_file: /var/log/node-guardian-agent.log
+firewall_backend: iptables  # ou firewalld
+mtls:
+  enabled: false
+  cert: /etc/synexguard/cert.pem
+  key: /etc/synexguard/key.pem</code></pre>
+
+        <h2>Firewall (iptables)</h2>
+
+        <p>O agente automatiamente bloqueia IPs com regras iptables:</p>
+
+        <pre><code>iptables -A INPUT -s 203.0.113.14 -j DROP
+iptables-save > /etc/iptables/rules.v4</code></pre>
+
+        <h2>Logs</h2>
+
+        <p>Localização dos logs:</p>
+
+        <table>
+          <tr><th>Componente</th><th>Log</th><th>Comando</th></tr>
+          <tr><td>Backend</td><td>systemd journal</td><td><code>journalctl -u synexguard-backend -f</code></td></tr>
+          <tr><td>Frontend</td><td>systemd journal</td><td><code>journalctl -u synexguard-frontend -f</code></td></tr>
+          <tr><td>Agente</td><td>/var/log/synexguard-agent.log</td><td><code>tail -f /var/log/synexguard-agent.log</code></td></tr>
+        </table>
+
+        <h2>Monitoramento (Prometheus)</h2>
+
+        <p>Métricas disponíveis em <code>/metrics/prometheus</code>:</p>
+
+        <pre><code>node_guardian_http_requests_total
+node_guardian_active_alerts
+node_guardian_ssh_login_attempts
+node_guardian_banned_ips
+node_guardian_server_cpu
+node_guardian_server_ram
+node_guardian_server_disk</code></pre>
+
+      </div>
+    </section>
+
+    <!-- AGENT -->
+    <section id="agent">
+      <div class="container">
+        <h1>🤖 Instalação do Agente</h1>
+
+        <h2>Requisitos</h2>
+        <ul>
+          <li>Linux (Ubuntu 18.04+, CentOS 7+, Debian 10+)</li>
+          <li>Go 1.20+ (ou usar binário pré-compilado)</li>
+          <li>Acesso root/sudo</li>
+        </ul>
+
+        <h2>Instalação Rápida (One-liner)</h2>
+
+        <div class="step">
+          <strong>1. Crie um token no dashboard</strong>
+          <ol>
+            <li>Acesse SynexGuard → "Tokens"</li>
+            <li>Clique "Novo token"</li>
+            <li>Copie o token gerado</li>
+          </ol>
+        </div>
+
+        <div class="step">
+          <strong>2. Execute o comando de instalação</strong>
+          <pre><code>curl -fsSL https://seu-dominio.com/install-agent.sh | bash -s -- \
+  --token eyJ... \
+  --server https://seu-dominio.com</code></pre>
+        </div>
+
+        <h2>Instalação Manual</h2>
+
+        <div class="step">
+          <span class="step-number">1</span>
+          <strong>Clone o repositório do agente</strong>
+          <pre><code>cd /tmp
+git clone https://github.com/seu-usuario/synexguard.git
+cd synexguard/agent</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">2</span>
+          <strong>Build do agente</strong>
+          <pre><code>go build -o synexguard-agent ./cmd/synexguard-agent</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">3</span>
+          <strong>Instale em /usr/local/bin</strong>
+          <pre><code>sudo cp synexguard-agent /usr/local/bin/
+sudo chmod +x /usr/local/bin/synexguard-agent</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">4</span>
+          <strong>Crie arquivo de configuração</strong>
+          <pre><code>sudo tee /etc/synexguard/config.yaml > /dev/null << 'EOF'
+server: https://seu-dominio.com
+token: SEU_TOKEN_JWT
+heartbeat_interval: 30
+log_file: /var/log/node-guardian-agent.log
+firewall_backend: iptables
+EOF
+sudo chmod 600 /etc/node-guardian/config.yaml</code></pre>
+        </div>
+
+        <div class="step">
+          <span class="step-number">5</span>
+          <strong>Configure como serviço systemd</strong>
+          <pre><code>sudo cp ../deploy/systemd/synexguard-agent.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl start synexguard-agent
+sudo systemctl enable synexguard-agent
+sudo systemctl status synexguard-agent</code></pre>
+        </div>
+
+        <h2>Verificar Instalação</h2>
+
+        <pre><code># Ver status do serviço
+sudo systemctl status node-guardian-agent
+
+# Ver logs
+sudo journalctl -u synexguard-agent -f
+
+# Verificar logs do agente
+sudo tail -f /var/log/node-guardian-agent.log
+
+# Testar conectividade
+curl -X GET https://seu-dominio.com/health</code></pre>
+
+        <h2>O Que o Agente Faz</h2>
+
+        <ul>
+          <li>✅ Coleta CPU, RAM, Disco, Conexões a cada 30s</li>
+          <li>✅ Detecta tentativas de login SSH</li>
+          <li>✅ Bloqueia IPs automaticamente (via iptables)</li>
+          <li>✅ Envia dados ao backend via API HTTPS</li>
+          <li>✅ Executa firewall rules automáticamente</li>
+          <li>✅ Coleta eventos de segurança</li>
+        </ul>
+
+      </div>
+    </section>
+
+    <!-- AUTOMATIONS -->
+    <section id="automations">
+      <div class="container">
+        <h1>⚡ Sistema de Automações</h1>
+
+        <h2>Regras Pré-configuradas</h2>
+
+        <div class="step">
+          <h3>1. SSH Brute-Force Auto Ban</h3>
+          <p><strong>Condição:</strong> 5+ tentativas de login falhadas em 5 minutos</p>
+          <p><strong>Ação:</strong> Bani o IP por 24h automaticamente</p>
+          <p><strong>Status:</strong> ✅ Ativo por padrão</p>
+        </div>
+
+        <div class="step">
+          <h3>2. Port Scan Detection</h3>
+          <p><strong>Condição:</strong> Port scanning detectado</p>
+          <p><strong>Ação:</strong> Bani o IP por 48h + Alerta crítico</p>
+          <p><strong>Status:</strong> ✅ Ativo</p>
+        </div>
+
+        <div class="step">
+          <h3>3. CPU Critical Alert</h3>
+          <p><strong>Condição:</strong> CPU acima de 95% por 5 minutos</p>
+          <p><strong>Ação:</strong> Alerta crítico</p>
+          <p><strong>Status:</strong> ✅ Ativo</p>
+        </div>
+
+        <div class="step">
+          <h3>4. Disk Space Warning</h3>
+          <p><strong>Condição:</strong> Disco acima de 85% de uso</p>
+          <p><strong>Ação:</strong> Alerta de aviso</p>
+          <p><strong>Status:</strong> ⏸️ Desativado (customize conforme necessário)</p>
+        </div>
+
+        <div class="step">
+          <h3>5. DDoS Mitigation</h3>
+          <p><strong>Condição:</strong> 1000+ conexões por minuto do mesmo IP</p>
+          <p><strong>Ação:</strong> Rate limit + bani por 1h</p>
+          <p><strong>Status:</strong> ✅ Ativo</p>
+        </div>
+
+        <h2>Como Criar Regras Customizadas</h2>
+
+        <ol>
+          <li>Acesse <strong>SynexGuard Dashboard → Automações</strong></li>
+          <li>Clique em <strong>Nova Regra</strong></li>
+          <li>Defina:
+            <ul>
+              <li><strong>Nome:</strong> Nome intuitivo da regra</li>
+              <li><strong>Condição:</strong> O que ativar a regra</li>
+              <li><strong>Ação:</strong> O que fazer quando ativada</li>
+            </ul>
+          </li>
+          <li>Clique <strong>Salvar e Ativar</strong></li>
+        </ol>
+
+        <h2>Exemplos de Regras</h2>
+
+        <h3>Exemplo 1: Banir múltiplos IPs suspeitos</h3>
+        <pre><code>Nome: Fail2Ban Integration
+Condição: 3+ failed logins em 10min
+Ação: Ban IP por 48h + Notificar admin
+Tipo: ssh_login_failed</code></pre>
+
+        <h3>Exemplo 2: Alerta de backup falho</h3>
+        <pre><code>Nome: Daily Backup Alert
+Condição: Backup job falhos
+Ação: Alerta + Email para ops@empresa.com</code></pre>
+
+        <h3>Exemplo 3: RAM crítica</h3>
+        <pre><code>Nome: Memory Critical
+Condição: RAM > 90%
+Ação: Alerta + Slack notification</code></pre>
+
+      </div>
+    </section>
+
+    <!-- TROUBLESHOOTING -->
+    <section id="troubleshooting">
+      <div class="container">
+        <h1>🔧 Troubleshooting</h1>
+
+        <h2>Backend não inicia</h2>
+
+        <div class="warning">
+          <strong>Erro:</strong> <code>Address already in use</code>
+          <pre><code># Encontre o processo na porta 8000
+lsof -i :8000
+
+# Mate o processo
+kill -9 PID</code></pre>
+        </div>
+
+        <div class="warning">
+          <strong>Erro:</strong> <code>database connection refused</code>
+          <pre><code># Verifique PostgreSQL
+sudo systemctl status postgresql
+
+# Teste conexão
+psql -U synexguard -d synexguard -h localhost</code></pre>
+        </div>
+
+        <h2>Frontend não carrega</h2>
+
+        <div class="warning">
+          <strong>Verificar:</strong>
+          <pre><code># Port 3000 está ouvindo?
+lsof -i :3000
+
+# Nginx está rodando?
+sudo systemctl status nginx
+
+# Verificar logs do Nginx
+sudo tail -f /var/log/nginx/error.log</code></pre>
+        </div>
+
+        <h2>Agente não conecta</h2>
+
+        <div class="warning">
+          <strong>Verificar:</strong>
+          <pre><code># Token válido?
+cat /etc/node-guardian/config.yaml
+
+# Conectividade com servidor?
+curl -X GET https://seu-dominio.com/health
+
+# Certificado SSL válido?
+curl -v https://seu-dominio.com/api/v1/health</code></pre>
+        </div>
+
+        <div class="warning">
+          <strong>Logs do agente:</strong>
+          <pre><code>sudo journalctl -u synexguard-agent -n 50 --no-pager
+sudo tail -f /var/log/synexguard-agent.log</code></pre>
+        </div>
+
+        <h2>IPs não são banidos</h2>
+
+        <div class="warning">
+          <strong>Verificar:</strong>
+          <pre><code># Regras iptables ativas?
+sudo iptables -L -n
+
+# Agente tem permissões de root?
+sudo -l | grep node-guardian
+
+# Firewall backend configurado corretamente?
+cat /etc/node-guardian/config.yaml | grep firewall</code></pre>
+        </div>
+
+        <h2>Performance lenta</h2>
+
+        <div class="warning">
+          <strong>Verificar:</strong>
+          <pre><code># CPU/Memória do servidor?
+top -b -n 1
+
+# Tamanho do banco de dados?
+sudo du -sh /var/lib/postgresql/
+
+# Limpeza de eventos antigos
+sudo -u postgres psql -d synexguard << 'SQL'
+DELETE FROM events WHERE criado_em < NOW() - INTERVAL '30 days';
+VACUUM;
+SQL</code></pre>
+        </div>
+
+        <h2>Reset de Senha Admin</h2>
+
+        <div class="warning">
+          <pre><code># Via terminal no servidor backend
+cd /opt/synexguard/backend
+source venv/bin/activate
+python << 'EOF'
+from app.core.security import get_password_hash
+from app.db import session
+from app.models.schemas import User
+
+db = next(session.get_db())
+user = db.query(User).filter_by(email="admin@synex-guard.io").first()
+user.password_hash = get_password_hash("nova_senha_123")
+db.commit()
+print("Senha resetada com sucesso!")
+EOF</code></pre>
+        </div>
+
+        <h2>Contato & Suporte</h2>
+
+        <ul>
+          <li>📧 <strong>Email:</strong> support@synexguard.io</li>
+          <li>💬 <strong>Discord:</strong> https://discord.gg/synexguard</li>
+          <li>🐛 <strong>Issues:</strong> https://github.com/nodeguard/issues</li>
+          <li>📚 <strong>Wiki:</strong> https://docs.nodeguard.io</li>
+        </ul>
+
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>&copy; 2026 SynexGuard. Documentação Oficial v1.0.0</p>
+  </footer>
+
+  <script>
+    function showSection(sectionId) {
+      // Hide all sections
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      
+      // Show selected section
+      document.getElementById(sectionId).classList.add('active');
+      
+      // Update sidebar active state
+      document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+      document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    // Handle navigation link clicks
+    document.querySelectorAll('nav a, .sidebar-nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+      });
+    });
+  </script>
+</body>
+</html>

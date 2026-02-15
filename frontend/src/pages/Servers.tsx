@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Server, Wifi, WifiOff, Clock, Cpu, MemoryStick, Loader2, RefreshCw } from 'lucide-react'
+import { Server, Wifi, WifiOff, Clock, Cpu, MemoryStick, Loader2, RefreshCw, HardDrive, Globe, Activity } from 'lucide-react'
 import { api } from '../api'
+import { ServerCardSkeleton } from '../components/Skeletons'
 
 interface ServerData {
   id: number
@@ -19,31 +20,64 @@ interface ServerData {
 export default function ServersPage() {
   const [servers, setServers] = useState<ServerData[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (showRefreshIndicator = false) => {
+    if (showRefreshIndicator) setRefreshing(true)
     try {
       const data = await api.listServers()
       setServers(data.items)
-    } catch { /* empty */ }
-    finally { setLoading(false) }
+    } catch (error) {
+      console.error('Failed to load servers:', error)
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
   }, [])
 
   useEffect(() => { load() }, [load])
   useEffect(() => {
-    const id = setInterval(load, 10000)
+    const id = setInterval(() => load(), 10000)
     return () => clearInterval(id)
   }, [load])
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+            <Server className="w-5 h-5 text-ng-neon" />
+            Servidores
+          </h1>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <ServerCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-white flex items-center gap-2">
-          <Server className="w-5 h-5 text-ng-neon" />
-          Servidores
-        </h1>
-        <button onClick={load} className="bg-white/5 hover:bg-white/10 text-slate-300 px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition-all">
-          <RefreshCw className="w-4 h-4" />
-          Atualizar
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+            <Server className="w-5 h-5 text-ng-neon" />
+            Servidores
+          </h1>
+          <span className="text-sm text-slate-400 bg-white/5 px-3 py-1 rounded-full">
+            {servers.filter(s => s.status === 'online').length}/{servers.length} online
+          </span>
+        </div>
+        <button
+          onClick={() => load(true)}
+          disabled={refreshing}
+          className="bg-white/5 hover:bg-white/10 text-slate-300 px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition-all disabled:cursor-not-allowed"
+        >
+          <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          {refreshing ? 'Atualizando...' : 'Atualizar'}
         </button>
       </div>
 

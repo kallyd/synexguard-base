@@ -102,15 +102,29 @@ def admin_list_tokens(user=Depends(get_current_user)):
 # ── All Servers ──────────────────────────────────────────────────────
 @router.get("/servers", dependencies=[_superadmin])
 def admin_list_servers(user=Depends(get_current_user)):
-    # Import agents list from the agents router
-    from app.routers.agents import _agents
+    from app.db.store import servers
     users = get_users_db()
+    tokens = get_agent_tokens_db()
     result = []
-    for a in _agents:
-        owner = next((u for u in users if u["id"] == a.get("usuario_id")), None)
+    for s in servers:
+        owner = next((u for u in users if u["id"] == s.get("usuario_id")), None)
+        token = next((t for t in tokens if t["id"] == s.get("token_id")), None)
         result.append({
-            **a,
-            "owner_nome": owner["nome"] if owner else "?",
+            "id": s["id"],
+            "hostname": s["hostname"],
+            "ip_publico": s["ip_publico"],
+            "os_info": s["os_info"],
+            "cpu": s["cpu"],
+            "ram": s["ram"],
+            "disk": s["disk"],
+            "uptime": s["uptime"],
+            "conns": s["conns"],
+            "open_ports": s["open_ports"],
+            "status": s["status"],
+            "ultimo_heartbeat": s["ultimo_heartbeat"].isoformat() if s.get("ultimo_heartbeat") else None,
+            "criado_em": s["criado_em"].isoformat() if s.get("criado_em") else None,
+            "owner_nome": owner["nome"] if owner else "Desconhecido",
             "owner_email": owner["email"] if owner else "?",
+            "token_nome": token["nome"] if token else "Token removido",
         })
     return result

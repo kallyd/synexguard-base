@@ -64,7 +64,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-ng-neon/10 border border-ng-neon/20 mb-4">
             <Shield className="w-8 h-8 text-ng-neon" />
           </div>
-          <h1 className="text-2xl font-bold text-white">NodeGuard</h1>
+          <h1 className="text-2xl font-bold text-white">SynexGuard</h1>
           <p className="text-slate-400 text-sm mt-1">Server Security Platform</p>
         </div>
 
@@ -153,7 +153,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-slate-500 text-xs mt-6">
-          NodeGuard v1.0 &middot; Server Security Platform
+          SynexGuard v1.0 &middot; Server Security Platform
         </p>
       </div>
     </div>

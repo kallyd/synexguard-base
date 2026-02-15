@@ -85,7 +85,7 @@ export default function TokensPage() {
             Tokens de Agente
           </h1>
           <p className="text-slate-400 text-sm mt-1">
-            Gerencie tokens para conectar seus servidores ao NodeGuard. Cada token isola os dados do seu ambiente.
+            Gerencie tokens para conectar seus servidores ao SynexGuard. Cada token isola os dados do seu ambiente.
           </p>
         </div>
         <button

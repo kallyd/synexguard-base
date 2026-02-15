@@ -1,4 +1,4 @@
-# Arquitetura Node Guardian
+# Arquitetura SynexGuard
 
 ## Visão de Componentes
 

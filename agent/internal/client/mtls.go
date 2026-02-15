@@ -4,95 +4,69 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	"crypto/x509"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
-	"os"
 	"time"
 
-	"nodeguardian/agent/internal/buffer"
-	"nodeguardian/agent/internal/types"
+	"synexguard/agent/internal/types"
 )
 
-type MTLSClient struct {
-	url        string
+type Client struct {
+	baseURL    string
 	token      string
 	httpClient *http.Client
 }
 
-func NewMTLSClient(url, certPath, keyPath, caPath, token string) (*MTLSClient, error) {
-	if url == "" {
+func NewClient(baseURL, token string) (*Client, error) {
+	if baseURL == "" {
 		return nil, errors.New("empty API URL")
 	}
 
-	tlsConfig := &tls.Config{MinVersion: tls.VersionTLS12}
-	if certPath != "" && keyPath != "" {
-		cert, err := tls.LoadX509KeyPair(certPath, keyPath)
-		if err != nil {
-			return nil, err
-		}
-		tlsConfig.Certificates = []tls.Certificate{cert}
-	}
-
-	if caPath != "" {
-		caBytes, err := os.ReadFile(caPath)
-		if err != nil {
-			return nil, err
-		}
-		pool := x509.NewCertPool()
-		pool.AppendCertsFromPEM(caBytes)
-		tlsConfig.RootCAs = pool
+	tlsConfig := &tls.Config{
+		MinVersion:         tls.VersionTLS12,
+		InsecureSkipVerify: true, // allow self-signed certs in dev
 	}
 
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
-	return &MTLSClient{
-		url:   url,
-		token: token,
+	return &Client{
+		baseURL: baseURL,
+		token:   token,
 		httpClient: &http.Client{
-			Timeout:   10 * time.Second,
+			Timeout:   15 * time.Second,
 			Transport: transport,
 		},
 	}, nil
 }
 
-func (c *MTLSClient) SendEvent(ctx context.Context, event types.Event) error {
-	body, _ := json.Marshal(event)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.url, bytes.NewBuffer(body))
+// SendHeartbeat posts the full heartbeat payload to /api/v1/agents/heartbeat.
+func (c *Client) SendHeartbeat(ctx context.Context, payload types.HeartbeatPayload) error {
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	url := c.baseURL + "/api/v1/agents/heartbeat"
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	if c.token != "" {
-		req.Header.Set("Authorization", "Bearer "+c.token)
-	}
+	req.Header.Set("X-Agent-Token", c.token)
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
+
 	if resp.StatusCode >= 300 {
-		return errors.New("event rejected")
+		return errors.New("heartbeat rejected: HTTP " + resp.Status)
 	}
+
+	log.Printf("heartbeat sent — hostname=%s cpu=%.1f%% ram=%.1f%% disk=%.1f%% conns=%d events=%d logins=%d",
+		payload.Hostname, payload.CPU, payload.RAM, payload.Disk, payload.Conns,
+		len(payload.Events), len(payload.LoginAttempts))
 	return nil
-}
-
-func StartRetrySender(ctx context.Context, c *MTLSClient, buf *buffer.MemoryBuffer, interval time.Duration) {
-	if c == nil {
-		return
-	}
-	ticker := time.NewTicker(interval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			batch := buf.PopBatch(50)
-			for _, item := range batch {
-				_ = c.SendEvent(ctx, item)
-			}
-		}
-	}
 }

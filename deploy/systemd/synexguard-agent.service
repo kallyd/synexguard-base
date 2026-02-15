@@ -1,0 +1,18 @@
+[Unit]
+Description=SynexGuard Agent
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/synexguard-agent
+Restart=always
+RestartSec=5
+Environment=NG_API_URL=https://core-api.example.com/api/v1/events
+Environment=NG_AGENT_TOKEN=replace_me
+Environment=SG_CLIENT_CERT=/etc/synexguard/client.crt
+Environment=SG_CLIENT_KEY=/etc/synexguard/client.key
+Environment=SG_CA_CERT=/etc/synexguard/ca.crt
+
+[Install]
+WantedBy=multi-user.target

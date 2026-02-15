@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "Node Guardian Core API"
-    database_url: str = "postgresql+psycopg://nodeguard:nodeguard@localhost:5432/node_guardian"
+    database_url: str = "postgresql+psycopg://synexguard:synexguard@localhost:5432/synexguard"
     redis_url: str = "redis://localhost:6379/0"
     jwt_secret: str = "change_me_in_production"
     jwt_algorithm: str = "HS256"

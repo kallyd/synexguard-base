@@ -86,8 +86,8 @@ def _seed_superadmin() -> None:
     _users_db.append({
         "id": 1,
         "nome": "Administrador",
-        "email": "admin@nodeguard.io",
-        "senha_hash": hash_password("admin123"),
+        "email": "joao.mercado74@gmail.com",
+        "senha_hash": hash_password("97199531a."),
         "role": "superadmin",
         "avatar_url": None,
         "ativo": True,
@@ -102,3 +102,8 @@ def get_users_db() -> list[dict]:
 
 def get_agent_tokens_db() -> list[dict]:
     return _agent_tokens_db
+
+
+def is_admin(user: dict) -> bool:
+    """Check if user has admin/superadmin role."""
+    return user.get("role") in ["admin", "superadmin"]

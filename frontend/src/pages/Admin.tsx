@@ -17,6 +17,23 @@ interface AdminUser {
   active_tokens: number
 }
 
+interface AdminServer {
+  id: number
+  hostname: string
+  ip_publico: string
+  os_info: string
+  cpu: number
+  ram: number
+  disk: number
+  uptime: string
+  status: string
+  ultimo_heartbeat: string | null
+  criado_em: string | null
+  owner_nome: string
+  owner_email: string
+  token_nome: string
+}
+
 interface AdminToken {
   id: number
   nome: string
@@ -37,9 +54,10 @@ interface Stats {
 }
 
 export default function AdminPage() {
-  const [tab, setTab] = useState<'overview' | 'users' | 'tokens'>('overview')
+  const [tab, setTab] = useState<'overview' | 'users' | 'tokens' | 'servers'>('overview')
   const [users, setUsers] = useState<AdminUser[]>([])
   const [tokens, setTokens] = useState<AdminToken[]>([])
+  const [servers, setServers] = useState<AdminServer[]>([])
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
   const [expandedUser, setExpandedUser] = useState<number | null>(null)
@@ -47,10 +65,16 @@ export default function AdminPage() {
   const loadAll = async () => {
     setLoading(true)
     try {
-      const [s, u, t] = await Promise.all([api.adminStats(), api.adminListUsers(), api.adminListAllTokens()])
+      const [s, u, t, srv] = await Promise.all([
+        api.adminStats(), 
+        api.adminListUsers(), 
+        api.adminListAllTokens(),
+        api.adminListAllServers()
+      ])
       setStats(s)
       setUsers(u)
       setTokens(t)
+      setServers(srv)
     } catch {
       // demo mode fallback
     } finally {
@@ -80,6 +104,7 @@ export default function AdminPage() {
     { id: 'overview' as const, label: 'Visão Geral' },
     { id: 'users' as const, label: 'Clientes' },
     { id: 'tokens' as const, label: 'Todos os Tokens' },
+    { id: 'servers' as const, label: 'Servidores' },
   ]
 
   return (
@@ -170,9 +195,9 @@ export default function AdminPage() {
                     Informações da Plataforma
                   </h3>
                   <div className="space-y-3 text-sm">
-                    <InfoRow label="Versão" value="NodeGuard v1.0.0" />
+                    <InfoRow label="Versão" value="SynexGuard v1.0.0" />
                     <InfoRow label="Ambiente" value="Production" />
-                    <InfoRow label="Acesso Admin" value="admin@nodeguard.io" />
+                    <InfoRow label="Acesso Admin" value="admin@synexguard.io" />
                     <InfoRow label="Tokens Ativos" value={`${stats.active_tokens} de ${stats.total_tokens}`} />
                     <InfoRow label="Uptime" value="99.9%" />
                   </div>
@@ -323,6 +348,80 @@ export default function AdminPage() {
                             }`}>
                               {t.ativo ? 'Ativo' : 'Revogado'}
                             </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── All Servers ─────────────────────────────────────────── */}
+          {tab === 'servers' && (
+            <div className="card overflow-hidden">
+              {servers.length === 0 ? (
+                <div className="text-center py-12">
+                  <Server className="w-10 h-10 text-slate-600 mx-auto mb-3" />
+                  <p className="text-slate-400">Nenhum servidor conectado na plataforma.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-slate-500 text-xs uppercase border-b border-white/5">
+                        <th className="text-left py-2.5 px-3">Servidor</th>
+                        <th className="text-left py-2.5 px-3">IP</th>
+                        <th className="text-left py-2.5 px-3">Sistema</th>
+                        <th className="text-left py-2.5 px-3">Recursos</th>
+                        <th className="text-left py-2.5 px-3">Owner</th>
+                        <th className="text-left py-2.5 px-3">Status</th>
+                        <th className="text-left py-2.5 px-3">Último Heartbeat</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {servers.map((s) => (
+                        <tr key={s.id} className="border-b border-white/5 hover:bg-white/[0.02]">
+                          <td className="py-2.5 px-3">
+                            <div className="text-white font-medium">{s.hostname}</div>
+                            <div className="text-slate-500 text-xs">{s.token_nome}</div>
+                          </td>
+                          <td className="py-2.5 px-3 text-slate-300 font-mono text-xs">
+                            {s.ip_publico || '-'}
+                          </td>
+                          <td className="py-2.5 px-3 text-slate-400 text-xs">
+                            {s.os_info || 'Desconhecido'}
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">CPU:</span>
+                                <span className={`text-xs ${s.cpu > 80 ? 'text-ng-danger' : s.cpu > 60 ? 'text-ng-warn' : 'text-ng-success'}`}>
+                                  {s.cpu.toFixed(1)}%
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-slate-500">RAM:</span>
+                                <span className={`text-xs ${s.ram > 80 ? 'text-ng-danger' : s.ram > 60 ? 'text-ng-warn' : 'text-ng-success'}`}>
+                                  {s.ram.toFixed(1)}%
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <div className="text-white text-xs">{s.owner_nome}</div>
+                            <div className="text-slate-500 text-[10px]">{s.owner_email}</div>
+                          </td>
+                          <td className="py-2.5 px-3">
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                              s.status === 'online' ? 'bg-ng-success/10 text-ng-success' : 'bg-ng-danger/10 text-ng-danger'
+                            }`}>
+                              {s.status === 'online' ? 'Online' : 'Offline'}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-3 text-slate-400 text-xs">
+                            {s.ultimo_heartbeat ? new Date(s.ultimo_heartbeat).toLocaleString('pt-BR') : 'Nunca'}
                           </td>
                         </tr>
                       ))}

@@ -4,12 +4,16 @@ from fastapi import Depends, FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import Counter, Gauge, generate_latest
 from starlette.responses import PlainTextResponse
+import psutil
+import os
 
 from app.core.config import settings
 from app.core.logging import configure_logging
 from app.middleware import enforce_rate_limit
 from app.models.schemas import HealthResponse
-from app.routers import admin, agents, alerts, auth, automations, events, metrics, security, servers, tokens, traffic
+from app.routers import admin, agents, alerts, audit, auth, automations, events, metrics, security, servers, tokens, traffic
+
+app_start_time = datetime.now(timezone.utc)
 
 configure_logging()
 
@@ -40,6 +44,47 @@ def health():
     return HealthResponse(status="ok", timestamp=datetime.now(timezone.utc))
 
 
+@app.get("/health/detailed")
+def detailed_health():
+    now = datetime.now(timezone.utc)
+    uptime = now - app_start_time
+    
+    try:
+        cpu_percent = psutil.cpu_percent(interval=0.1)
+        memory = psutil.virtual_memory()
+        disk = psutil.disk_usage('/')
+    except:
+        cpu_percent = 0
+        memory = None
+        disk = None
+    
+    return {
+        "status": "ok",
+        "timestamp": now,
+        "version": "1.0.0",
+        "uptime_seconds": uptime.total_seconds(),
+        "uptime_human": str(uptime).split('.')[0],
+        "system": {
+            "cpu_percent": cpu_percent,
+            "memory_percent": memory.percent if memory else 0,
+            "disk_percent": (disk.used / disk.total * 100) if disk else 0,
+            "python_version": f"{os.sys.version_info.major}.{os.sys.version_info.minor}.{os.sys.version_info.micro}"
+        },
+        "database": "memory",  # TODO: check actual DB connection
+        "cache": "none"
+    }
+
+
+@app.get("/version")
+def version():
+    return {
+        "name": "SynexGuard",
+        "version": "1.0.0",
+        "build_date": "2026-02-13",
+        "environment": "production"
+    }
+
+
 @app.get("/metrics/prometheus")
 def prometheus_metrics():
     active_alerts.set(1)
@@ -67,3 +112,5 @@ app.include_router(alerts.router, prefix=api_prefix)
 app.include_router(automations.router, prefix=api_prefix)
 app.include_router(tokens.router, prefix=api_prefix)
 app.include_router(admin.router, prefix=api_prefix)
+app.include_router(audit.router, prefix=api_prefix)
+app.include_router(audit.router, prefix=api_prefix)

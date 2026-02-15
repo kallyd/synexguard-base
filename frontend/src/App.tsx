@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './auth'
+import { ThemeProvider } from './theme'
 import Layout from './components/Layout'
 import LoginPage from './pages/Login'
 import DashboardPage from './pages/Dashboard'
 import ServersPage from './pages/Servers'
 import TokensPage from './pages/Tokens'
 import SettingsPage from './pages/Settings'
+import AuditLogsPage from './pages/AuditLogs'
 import {
   SecurityPage,
   BannedIPsPage,
@@ -45,6 +47,7 @@ function AppRoutes() {
       <Route path="/tokens" element={<PrivateRoute><TokensPage /></PrivateRoute>} />
       <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
       <Route path="/admin" element={<PrivateRoute><AdminPage /></PrivateRoute>} />
+      <Route path="/audit-logs" element={<PrivateRoute><AuditLogsPage /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
@@ -53,9 +56,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

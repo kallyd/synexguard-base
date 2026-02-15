@@ -1,13 +1,14 @@
 module.exports = {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         ng: {
-          bg: '#09090b',
-          card: '#131316',
+          bg: 'var(--ng-bg)',
+          card: 'var(--ng-card)',
           neon: '#DC2626',
-          surface: '#1a1a1f',
+          surface: 'var(--ng-surface)',
           success: '#22C55E',
           danger: '#EF4444',
           warn: '#F59E0B',

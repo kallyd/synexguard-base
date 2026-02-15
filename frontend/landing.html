@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SynexGuard - Segurança Profissional para Servidores</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #09090b 0%, #0f0f15 100%);
+      color: #e4e4e7;
+      line-height: 1.6;
+    }
+
+    /* ──── HEADER ──── */
+    header {
+      background: linear-gradient(135deg, rgba(17,17,23,0.95) 0%, rgba(15,15,21,0.95) 100%);
+      border-bottom: 1px solid rgba(220,38,38,0.2);
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #DC2626;
+      text-decoration: none;
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    nav a {
+      color: #a1a1aa;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: #DC2626;
+    }
+
+    .nav-btn {
+      background: #DC2626;
+      color: #09090b;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: #ef4444;
+      transform: translateY(-2px);
+    }
+
+    /* ──── SECTIONS ──── */
+    section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 60px 2rem 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ──── HERO ──── */
+    .hero {
+      text-align: center;
+      padding-top: 4rem;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #DC2626 0%, #ef4444 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 900;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: #a1a1aa;
+      margin-bottom: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #DC2626 0%, #ef4444 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(220,38,38,0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(220,38,38,0.1);
+      color: #DC2626;
+      border: 1px solid #DC2626;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(220,38,38,0.2);
+    }
+
+    .hero-image {
+      margin-top: 4rem;
+      background: rgba(220,38,38,0.1);
+      border: 1px solid rgba(220,38,38,0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      color: #71717a;
+    }
+
+    /* ──── FEATURES ──── */
+    .features {
+      background: rgba(220,38,38,0.05);
+      border-top: 1px solid rgba(220,38,38,0.2);
+      border-bottom: 1px solid rgba(220,38,38,0.2);
+    }
+
+    .features h2 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 4rem;
+      color: #DC2626;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: rgba(17,17,23,0.5);
+      border: 1px solid rgba(220,38,38,0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      transition: all 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: #DC2626;
+      background: rgba(220,38,38,0.1);
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      color: #f4f4f5;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      color: #a1a1aa;
+      font-size: 0.9rem;
+    }
+
+    /* ──── FOR ADMIN ──── */
+    .for-admin {
+      background: linear-gradient(135deg, rgba(220,38,38,0.1) 0%, rgba(220,38,38,0.05) 100%);
+    }
+
+    .role-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .role-section h2 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #DC2626;
+    }
+
+    .role-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: rgba(17,17,23,0.5);
+      border-left: 4px solid #DC2626;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .step-item:hover {
+      background: rgba(220,38,38,0.1);
+    }
+
+    .step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: #DC2626;
+      color: #09090b;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      color: #f4f4f5;
+      margin-bottom: 0.25rem;
+    }
+
+    .step-content p {
+      color: #a1a1aa;
+      font-size: 0.9rem;
+    }
+
+    .code-block {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(220,38,38,0.2);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: 'Courier New', monospace;
+      color: #22c55e;
+      font-size: 0.85rem;
+      overflow-x: auto;
+    }
+
+    /* ──── FOR CLIENT ──── */
+    .for-client {
+      background: linear-gradient(135deg, rgba(17,17,23,0.5) 0%, rgba(15,15,21,0.5) 100%);
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .benefit-card {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .benefit-card .icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .benefit-card h4 {
+      color: #22c55e;
+      margin-bottom: 0.5rem;
+    }
+
+    .benefit-card p {
+      color: #a1a1aa;
+      font-size: 0.9rem;
+    }
+
+    /* ──── PRICING ──── */
+    .pricing {
+      text-align: center;
+    }
+
+    .pricing h2 {
+      font-size: 2.5rem;
+      margin-bottom: 4rem;
+      color: #DC2626;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .pricing-card {
+      background: rgba(17,17,23,0.5);
+      border: 1px solid rgba(220,38,38,0.2);
+      border-radius: 1rem;
+      padding: 2rem;
+      transition: all 0.2s;
+    }
+
+    .pricing-card.featured {
+      border-color: #DC2626;
+      background: rgba(220,38,38,0.1);
+      transform: scale(1.05);
+    }
+
+    .pricing-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #f4f4f5;
+    }
+
+    .pricing-card .price {
+      font-size: 2.5rem;
+      color: #DC2626;
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+
+    .pricing-card ul {
+      text-align: left;
+      margin: 2rem 0;
+      list-style: none;
+    }
+
+    .pricing-card li {
+      padding: 0.5rem 0;
+      color: #a1a1aa;
+      border-bottom: 1px solid rgba(220,38,38,0.1);
+    }
+
+    .pricing-card li:before {
+      content: "✓ ";
+      color: #22c55e;
+      font-weight: 900;
+      margin-right: 0.5rem;
+    }
+
+    /* ──── FAQ ──── */
+    .faq {
+      background: rgba(220,38,38,0.05);
+      border-top: 1px solid rgba(220,38,38,0.2);
+    }
+
+    .faq h2 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 4rem;
+      color: #DC2626;
+    }
+
+    .faq-item {
+      background: rgba(17,17,23,0.5);
+      border: 1px solid rgba(220,38,38,0.2);
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+      background: rgba(220,38,38,0.05);
+    }
+
+    .faq-question:hover {
+      background: rgba(220,38,38,0.1);
+    }
+
+    .faq-question h4 {
+      color: #f4f4f5;
+      margin: 0;
+    }
+
+    .faq-arrow {
+      color: #DC2626;
+      transition: transform 0.2s;
+      font-weight: 900;
+    }
+
+    .faq-item.active .faq-arrow {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 1.5rem;
+      border-top: 1px solid rgba(220,38,38,0.2);
+      color: #a1a1aa;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    /* ──── FOOTER ──── */
+    footer {
+      background: rgba(0,0,0,0.5);
+      border-top: 1px solid rgba(220,38,38,0.2);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: #71717a;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: #a1a1aa;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #DC2626;
+    }
+
+    /* ──── RESPONSIVE ──── */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .hero-cta {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .role-section {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .pricing-card.featured {
+        transform: scale(1);
+      }
+
+      nav {
+        display: none;
+      }
+
+      header {
+        position: relative;
+      }
+
+      section {
+        padding-top: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="header-content">
+      <a href="#" class="logo">🛡️ SynexGuard</a>
+      <nav>
+        <a href="#para-admin">Para Admin</a>
+        <a href="#para-cliente">Para Cliente</a>
+        <a href="docs.html" class="nav-btn">📚 Documentação</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <h1>Segurança Profissional para Seus Servidores</h1>
+      <p>SynexGuard detecta automaticamente ameaçans, bloqueia IPs maliciosos e mantém seus servidores protegidos 24/7</p>
+      <div class="hero-cta">
+        <a href="#para-admin" class="btn btn-primary">🚀 Começar Agora</a>
+        <a href="docs.html" class="btn btn-secondary">📚 Ver Documentação</a>
+      </div>
+      <div class="hero-image">
+        <p>🖥️ Dashboard centralizado em tempo real</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <h2>Características Principais</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🚨</div>
+          <h3>Detecção em Tempo Real</h3>
+          <p>Monitora SSH brute-force, port scans, anomalias de rede e muito mais automaticamente</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Bloqueio Automático</h3>
+          <p>Bloqueia IPs maliciosos instantaneamente via firewall. Nenhuma intervenção manual necessária</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Métricas em Tempo Real</h3>
+          <p>CPU, RAM, Disco, Tráfego de Rede. Tudo monitorado e visualizado em um único dashboard</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>Multi-Tenancy Seguro</h3>
+          <p>Cada cliente tem seus tokens e dados isolados. Autenticação JWT com 30+ endpoints API</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h3>Automações Customizáveis</h3>
+          <p>Crie regras de automação. "Se X acontecer, então Y". Sem código necessário</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>Dashboard Intuitivo</h3>
+          <p>Interface responsiva e profissional. Tudo que você precisa em poucos cliques</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARA ADMIN -->
+  <section id="para-admin" class="for-admin">
+    <div class="container">
+      <h2>📋 Guia para Administrador do Sistema</h2>
+      <div class="role-section">
+        <div>
+          <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #d4d4d8;">Como administrador, você é responsável pela instalação, configuração e manutenção do SynexGuard. Siga os passos abaixo para começar:</p>
+          
+          <div class="role-steps">
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>Prepare o Servidor Linux</h4>
+                <p>Configure um servidor Ubuntu 20.04+ com Python 3.10+, Node.js 18+, PostgreSQL e Docker</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>Clone o Repositório</h4>
+                <p>Obtenha o código-fonte do SynexGuard do GitHub</p>
+                <div class="code-block">git clone https://github.com/seu-usuario/synexguard.git</div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Instale o Backend</h4>
+                <p>Configure Python, dependências e banco PostgreSQL</p>
+                <div class="code-block">cd backend && pip install -r requirements.txt</div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <h4>Instale o Frontend</h4>
+                <p>Build a aplicação React para produção</p>
+                <div class="code-block">cd frontend && npm install && npm run build</div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">5</div>
+              <div class="step-content">
+                <h4>Configure Systemd & Nginx</h4>
+                <p>Configure auto-inicialização e reverse proxy. Aplique SSL com Let's Encrypt</p>
+                <div class="code-block">sudo systemctl enable synexguard-backend synexguard-frontend</div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">6</div>
+              <div class="step-content">
+                <h4>Acesse o Dashboard</h4>
+                <p>Faça login com admin@synex-guard.io / admin123. Mude a senha!</p>
+                <div class="code-block">https://seu-dominio.com</div>
+              </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="color: #DC2626; margin-bottom: 1.5rem;">Tarefas de Admin</h3>
+          
+          <div class="role-steps">
+            <div class="step-item">
+              <div class="feature-icon">👥</div>
+              <div class="step-content">
+                <h4>Gerenciar Usuários</h4>
+                <p>Crie contas para clientes e outros administradores. Cada um com seus próprios servidores</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="feature-icon">🔑</div>
+              <div class="step-content">
+                <h4>Gerar Tokens para Agentes</h4>
+                <p>Crie tokens únicos para cada servidor a ser monitorado. Revogue quando necessário</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="feature-icon">⚙️</div>
+              <div class="step-content">
+                <h4>Configurar Automações Globais</h4>
+                <p>Defina regras padrão de segurança para todos os clientes (SSH brute-force, DDoS, etc)</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="feature-icon">📊</div>
+              <div class="step-content">
+                <h4>Monitorar Saúde do Sistema</h4>
+                <p>Verifique logs, métricas Prometheus, status dos serviços e performance geral</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="feature-icon">🔧</div>
+              <div class="step-content">
+                <h4>Manutenção e Backups</h4>
+                <p>Mantenha o banco de dados limpo, faça backups regulares, atualize o sistema</p>
+              </div>
+            </div>
+          </div>
+
+          <a href="docs.html" style="display: inline-block; margin-top: 2rem;" class="btn btn-primary">📚 Ver Documentação Completa de Instalação</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARA CLIENTE -->
+  <section id="para-cliente" class="for-client">
+    <div class="container">
+      <h2>🎯 Guia para Cliente / Usuário Final</h2>
+      
+      <div class="role-section">
+        <div>
+          <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #d4d4d8;">Como cliente, você usa o SynexGuard para monitorar seus servidores. Aqui está tudo que você precisa saber:</p>
+
+          <div class="role-steps">
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h4>Receba suas Credenciais</h4>
+                <p>O admin envia seu email e senha de acesso ao dashboard SynexGuard</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h4>Faça Login no Dashboard</h4>
+                <p>Acesse https://synexguard.seu-dominio.com e entre com suas credénciais</p>
+                <div class="code-block">Email: seu-email@empresa.com
+Senha: sua-senha</div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h4>Gere Token para Agente</h4>
+                <p>No dashboard, vá para "Tokens" e clique "Novo Token". Copie o token</p>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">4</div>
+              <div class="step-content">
+                <h4>Instale o Agente nos Servidores</h4>
+                <p>Execute o one-liner no servidor a ser monitorado:</p>
+                <div class="code-block">curl -fsSL https://seu-dominio.com/install-agent.sh | bash -s -- --token SEU_TOKEN</div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">5</div>
+              <div class="step-content">
+                <h4>Monitore seus Servidores</h4>
+                <p>Veja CPU, RAM, Disco, Tráfego de Rede e Alertas de Segurança em tempo real</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="color: #22c55e; margin-bottom: 1.5rem;">O que você pode fazer</h3>
+
+          <div class="benefits-grid">
+            <div class="benefit-card">
+              <div class="icon">📊</div>
+              <h4>Dashboard</h4>
+              <p>Veja status de todos os servidores em um só lugar</p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="icon">🚨</div>
+              <h4>Alertas</h4>
+              <p>Receba notificações de problemas críticos de segurança</p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="icon">🔍</div>
+              <h4>Investigar</h4>
+              <p>Busque eventos, IPs suspeitos e padrões de ataque</p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="icon">🛡️</div>
+              <h4>Segurança</h4>
+              <p>Veja tentativas de login, IPs banidos, porta abertas</p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="icon">⚙️</div>
+              <h4>Personalizar</h4>
+              <p>Crie suas próprias regras de automação personalizadas</p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="icon">📚</div>
+              <h4>Documentação</h4>
+              <p>Acesse guias completos de uso do sistema</p>
+            </div>
+          </div>
+
+          <h3 style="color: #22c55e; margin-top: 3rem; margin-bottom: 1rem;">Dashboard - O que você verá:</h3>
+          <ul style="text-align: left; margin-left: 0;">
+            <li>✅ <strong>Indicadores principais:</strong> Servidores online, Ataques detectados, IPs banidos, Alertas ativos</li>
+            <li>✅ <strong>Métricas:</strong> CPU, RAM e Disco médio de todos os servidores</li>
+            <li>✅ <strong>Eventos recentes:</strong> Login attempts, detecções de segurança</li>
+            <li>✅ <strong>IPs banidos:</strong> Lista de IPs bloqueados automaticamente</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 style="color: #22c55e; margin-top: 4rem; text-align: center; margin-bottom: 2rem;">Está tudo pronto? Acesse o dashboard agora!</h3>
+      <div style="text-align: center;">
+        <a href="/" class="btn btn-primary" style="display: inline-block;">🚀 Ir para Dashboard</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing">
+    <div class="container">
+      <h2>Planos Disponíveis</h2>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Starter</h3>
+          <div class="price">$0</div>
+          <p style="color: #a1a1aa; margin-bottom: 1rem;">Ideal para testar</p>
+          <ul>
+            <li>Até 2 servidores</li>
+            <li>Dashboard básico</li>
+            <li>Suporte por email</li>
+            <li>Retenção de dados 7 dias</li>
+          </ul>
+          <a href="#" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Começar Grátis</a>
+        </div>
+
+        <div class="pricing-card featured">
+          <h3>Professional</h3>
+          <div class="price">$29</div>
+          <p style="color: #a1a1aa; margin-bottom: 1rem;">Mais popular</p>
+          <ul>
+            <li>Até 10 servidores</li>
+            <li>Dashboard completo</li>
+            <li>Automações customizadas</li>
+            <li>Retenção de dados 30 dias</li>
+            <li>Suporte prioritário</li>
+          </ul>
+          <a href="#" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Assinar Agora</a>
+        </div>
+
+        <div class="pricing-card">
+          <h3>Enterprise</h3>
+          <div class="price">Customizado</div>
+          <p style="color: #a1a1aa; margin-bottom: 1rem;">Para empresas</p>
+          <ul>
+            <li>Servidores ilimitados</li>
+            <li>API completa</li>
+            <li>Webhooks e integrações</li>
+            <li>Retenção de dados 90 dias</li>
+            <li>Suporte 24/7 dedicado</li>
+          </ul>
+          <a href="#" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">Contatar Vendas</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <div class="container">
+      <h2>Perguntas Frequentes</h2>
+
+      <div class="faq-item active">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h4>Como faço para instalar o agente?</h4>
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>É muito simples! Após gerar um token no dashboard, execute este comando no servidor:</p>
+          <div class="code-block">curl -fsSL https://seu-dominio.com/install-agent.sh | bash -s -- --token SEU_TOKEN</div>
+          <p>O agente será instalado como serviço systemd e iniciará automaticamente.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h4>O SynexGuard bloqueia IPs automaticamente?</h4>
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Sim! Por padrão, o NodeGuard detecta SSH brute-force e bloqueia automaticamente o IP por 24 horas. Você pode customizar essas regras no dashboard em "Automações".</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h4>Quanto de overhead o agente consome?</h4>
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Muito pouco! O agente consome menos de 50MB de RAM e tira <1% de CPU. Ele roda leve e eficiente.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h4>Posso monitorar servidores em diferentes localizações?</h4>
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Sem problema! O NodeGuard funciona com qualquer servidor Linux com acesso à internet. Todos os dados são centralizados no seu dashboard.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h4>Meus dados estão seguros?</h4>
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Sim! NodeGuard usa autenticação JWT, criptografia HTTPS/TLS, e isolamento multi-tenancy. Cada cliente tem seus dados completamente isolados.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <h4>Preciso de suporte técnico?</h4>
+          <span class="faq-arrow">▼</span>
+        </div>
+        <div class="faq-answer">
+          <p>Claro! Você tem acesso a:</p>
+          <ul style="text-align: left; margin-top: 1rem;">
+            <li>📚 Documentação completa</li>
+            <li>💬 Comunidade no Discord</li>
+            <li>📧 Email support</li>
+            <li>📞 Suporte 24/7 (plano Enterprise)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-links">
+        <a href="#para-admin">Para Admin</a>
+        <a href="#para-cliente">Para Cliente</a>
+        <a href="docs.html">Documentação</a>
+        <a href="#">Contato</a>
+        <a href="#">Privacidade</a>
+      </div>
+      <p>&copy; 2026 SynexGuard. Segurança profissional para seus servidores. Desenvolvido com ❤️ em Python, React e Go.</p>
+    </div>
+  </footer>
+
+  <script>
+    function toggleFaq(element) {
+      element.closest('.faq-item').classList.toggle('active');
+    }
+
+    // Add smooth scroll behavior
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

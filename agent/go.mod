@@ -1,3 +1,3 @@
-module nodeguardian/agent
+module synexguard/agent
 
 go 1.23

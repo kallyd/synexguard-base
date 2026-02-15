@@ -12,7 +12,7 @@ from app.models.schemas import AgentTokenIn, AgentTokenOut
 
 router = APIRouter(prefix="/tokens", tags=["tokens"])
 
-GITHUB_RAW_BASE = "https://raw.githubusercontent.com/YOUR_USER/nodeguard/main"
+GITHUB_RAW_BASE = "https://raw.githubusercontent.com/YOUR_USER/synexguard/main"
 
 
 def _install_cmd(token: str) -> str:

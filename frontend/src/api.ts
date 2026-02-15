@@ -92,4 +92,39 @@ export const api = {
   adminListAllTokens: () => request<any[]>('/admin/tokens'),
   adminListAllServers: () => request<any[]>('/admin/servers'),
   adminStats: () => request<any>('/admin/stats'),
+
+  // Audit Logs
+  listAuditLogs: (limit = 100) =>
+    request<{ items: any[]; total: number }>(`/audit?limit=${limit}`),
+  getAuditSummary: () =>
+    request<{ actions: Record<string, number>; users: Record<string, number>; total: number }>('/audit/summary'),
+
+  // Health & Monitoring
+  getHealthDetails: () =>
+    request<{
+      status: string;
+      timestamp: string;
+      uptime: string;
+      version: string;
+      system: {
+        cpu_percent: number;
+        memory: { total: number; used: number; available: number; percent: number };
+        disk: { total: number; used: number; free: number; percent: number };
+        python_version: string;
+      };
+    }>('/health/detailed'),
+  getVersion: () =>
+    request<{ version: string; environment: string }>('/version'),
+
+  // Search & Export
+  globalSearch: (query: string, type?: string) =>
+    request<{ items: any[]; total: number }>(`/search?q=${encodeURIComponent(query)}${type ? '&type=' + type : ''}`),
+  exportData: (type: 'events' | 'servers' | 'alerts', format = 'csv') =>
+    request<any>(`/export/${type}?format=${format}`, { method: 'GET' }),
+
+  // Session Management
+  extendSession: () =>
+    request<{ expires_at: string }>('/auth/extend-session', { method: 'POST', body: '{}' }),
+  checkSession: () =>
+    request<{ valid: boolean; expires_at: string }>('/auth/check-session'),
 }

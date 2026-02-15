@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NodeGuard — Documentação Completa</title>
+  <title>SynexGuard — Documentação Completa</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
     /* ── Reset & Vars ────────────────────────────────────── */
@@ -140,7 +140,7 @@
     <div style="display:flex; align-items:center; gap:16px">
       <button class="sidebar-toggle" onclick="document.querySelector('aside').classList.toggle('open')">☰</button>
       <a href="landing.html" class="logo" style="color:#fff">
-        <span class="shield">🛡</span> NodeGuard
+        <span class="shield">🛡</span> SynexGuard
       </a>
       <span class="header-badge">DOCS v1.0</span>
     </div>
@@ -215,13 +215,13 @@
 <main>
 
 <!-- ─────────────────────────────────────────── -->
-<h1 class="doc-title">Documentação NodeGuard</h1>
+<h1 class="doc-title">Documentação SynexGuard</h1>
 <p class="doc-subtitle">Referência técnica completa — configuração, API, guias de uso e arquitetura do sistema.</p>
 
 <!-- ═══ VISÃO GERAL ═══ -->
 <h2 id="overview"><span class="h2-icon">📋</span> Visão Geral</h2>
 <p>
-  <strong>NodeGuard</strong> é uma plataforma completa de segurança e monitoramento para servidores Linux. O sistema é composto por três componentes:
+  <strong>SynexGuard</strong> é uma plataforma completa de segurança e monitoramento para servidores Linux. O sistema é composto por três componentes:
 </p>
 <ul>
   <li><strong>Agente Go</strong> — binário leve instalado em cada servidor, envia heartbeats (CPU, RAM, disco, logins SSH, eventos) a cada 30 segundos.</li>
@@ -252,7 +252,7 @@
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │  <span class="code-comment">Servidor Linux (N instâncias)</span>                             │
 │  ┌──────────────────────┐                                   │
-│  │ 🛡 NodeGuard Agent   │  ← Go binary + systemd            │
+│  │ 🛡 SynexGuard Agent   │  ← Go binary + systemd            │
 │  │  • auth.log parser   │                                   │
 │  │  • system metrics    │                                   │
 │  │  • network stats     │                                   │
@@ -316,7 +316,7 @@
 <h2 id="backend-setup"><span class="h2-icon">⚙</span> Instalação do Backend</h2>
 <h4>1. Clone e entre no diretório</h4>
 <pre><code><span class="code-comment"># Clone o repositório</span>
-git clone https://github.com/seu-usuario/nodeguard.git
+git clone https://github.com/seu-usuario/synexguard.git
 cd nodeguard/backend</code></pre>
 
 <h4>2. Crie um ambiente virtual (recomendado)</h4>
@@ -382,20 +382,20 @@ docker compose down</code></pre>
 <p>O agente é instalado nos servidores Linux que você deseja monitorar. Primeiro, gere um token no painel.</p>
 
 <h4>One-liner (recomendado)</h4>
-<pre><code>curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- \
+<pre><code>curl -fsSL https://synex-guard.io/install-agent.sh | bash -s -- \
   --token <span class="code-string">SEU_TOKEN_AQUI</span> \
   --api-url <span class="code-string">http://seu-backend:8000</span></code></pre>
 
 <h4>Verificar status</h4>
-<pre><code>sudo systemctl status node-guardian-agent
-sudo journalctl -u node-guardian-agent -f  <span class="code-comment"># logs em tempo real</span></code></pre>
+<pre><code>sudo systemctl status synexguard-agent
+sudo journalctl -u synexguard-agent -f  <span class="code-comment"># logs em tempo real</span></code></pre>
 
 <h4>Reiniciar / Parar</h4>
-<pre><code>sudo systemctl restart node-guardian-agent
-sudo systemctl stop node-guardian-agent</code></pre>
+<pre><code>sudo systemctl restart synexguard-agent
+sudo systemctl stop synexguard-agent</code></pre>
 
 <h4>Arquivo de configuração</h4>
-<pre><code><span class="code-comment"># /etc/node-guardian/agent.yaml</span>
+<pre><code><span class="code-comment"># /etc/synexguard/agent.yaml</span>
 api_url: <span class="code-string">"http://seu-backend:8000"</span>
 token: <span class="code-string">"ng_xxxxxxxxxxxxxxxxxxxxxxxxxx"</span>
 heartbeat_interval: <span class="code-val">30</span>   <span class="code-comment"># segundos</span>
@@ -465,7 +465,7 @@ log_file: <span class="code-string">"/var/log/auth.log"</span></code></pre>
 <div class="info-card warning">
   <h4>🔑 Credenciais Padrão</h4>
   <p>O sistema cria automaticamente no primeiro boot:</p>
-  <pre style="margin:8px 0 0"><code>Email: <span class="code-string">admin@nodeguard.io</span>
+  <pre style="margin:8px 0 0"><code>Email: <span class="code-string">admin@synex-guard.io</span>
 Senha: <span class="code-string">admin123</span></code></pre>
   <p style="margin:8px 0 0; color:var(--danger)"><strong>Altere a senha imediatamente após o primeiro login!</strong></p>
 </div>
@@ -1176,7 +1176,7 @@ Senha: <span class="code-string">admin123</span></code></pre>
 
 <h4>4. Instalar o Agente</h4>
 <p>Execute o one-liner no servidor Linux:</p>
-<pre><code>curl -sSL https://nodeguard.io/install.sh | sudo bash -s -- --token SEU_TOKEN --api-url http://backend:8000</code></pre>
+<pre><code>curl -fsSL https://synex-guard.io/install-agent.sh | bash -s -- --token SEU_TOKEN --api-url http://backend:8000</code></pre>
 
 <h4>5. Verificar Conexão</h4>
 <p>Na seção <strong>🖥 Servidores</strong>, seu servidor aparecerá como <strong style="color:var(--success)">Online</strong> em ~30 segundos.</p>
@@ -1207,7 +1207,7 @@ Senha: <span class="code-string">admin123</span></code></pre>
 <h2 id="guide-admin"><span class="h2-icon">🔧</span> Guia do Administrador</h2>
 
 <h4>1. Primeiro Acesso</h4>
-<p>Login com <code>admin@nodeguard.io</code> / <code>admin123</code>. Altere a senha em <strong>Configurações</strong>.</p>
+<p>Login com <code>admin@synex-guard.io</code> / <code>admin123</code>. Altere a senha em <strong>Configurações</strong>.</p>
 
 <h4>2. Painel Admin</h4>
 <p>O menu <strong>👑 Admin</strong> (visível só para superadmins) permite:</p>
@@ -1247,17 +1247,17 @@ sudo systemctl status node-guardian-agent
 sudo journalctl -u node-guardian-agent -f
 
 <span class="code-comment"># Reiniciar</span>
-sudo systemctl restart node-guardian-agent</code></pre>
+sudo systemctl restart synexguard-agent</code></pre>
 
 <!-- ═══ TROUBLESHOOTING ═══ -->
 <h2 id="troubleshooting"><span class="h2-icon">🐛</span> Troubleshooting</h2>
 
 <h4>O servidor não aparece como Online</h4>
 <ul>
-  <li>Verifique se o agente está rodando: <code>systemctl status node-guardian-agent</code></li>
+  <li>Verifique se o agente está rodando: <code>systemctl status synexguard-agent</code></li>
   <li>Verifique se o token é válido e ativo no painel</li>
   <li>Verifique conectividade: <code>curl -v http://backend:8000/health</code></li>
-  <li>Verifique logs do agente: <code>journalctl -u node-guardian-agent -f</code></li>
+  <li>Verifique logs do agente: <code>journalctl -u synexguard-agent -f</code></li>
 </ul>
 
 <h4>Erro 401 no heartbeat</h4>
@@ -1292,7 +1292,7 @@ sudo systemctl restart node-guardian-agent</code></pre>
 </ul>
 
 <div style="margin-top:60px; padding-top:24px; border-top:1px solid var(--border); text-align:center">
-  <p style="color:var(--muted); font-size:.8rem">© 2026 NodeGuard — Documentação v1.0 · <a href="landing.html">Landing Page</a> · <a href="/login">Acessar Painel</a></p>
+  <p style="color:var(--muted); font-size:.8rem">© 2026 SynexGuard — Documentação v1.0 · <a href="landing.html">Landing Page</a> · <a href="/login">Acessar Painel</a></p>
 </div>
 
 </main>

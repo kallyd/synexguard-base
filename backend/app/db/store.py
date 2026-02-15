@@ -1,5 +1,5 @@
 """
-Centralized in-memory data store for NodeGuard.
+Centralized in-memory data store for SynexGuard.
 
 All modules import from here so data is shared across routers.
 This replaces scattered _fake / hardcoded lists.
@@ -457,6 +457,36 @@ def _check_disk_alerts(usuario_id: int, servidor_id: int, hostname: str, disk: f
                 mensagem=f"Disco em {disk:.1f}%.",
             )
 
+
+# ── Audit Logs ──────────────────────────────────────────────────────
+audit_logs: list[dict[str, Any]] = []
+
+def add_audit_log(
+    usuario_id: int,
+    action: str,
+    resource_type: str,
+    resource_id: str | None = None,
+    details: dict[str, Any] | None = None,
+    ip_address: str = "0.0.0.0",
+) -> dict:
+    log = {
+        "id": next_id("audit_logs"),
+        "usuario_id": usuario_id,
+        "action": action,  # login, logout, create, update, delete, ban_ip, etc.
+        "resource_type": resource_type,  # user, server, ban, token, etc.
+        "resource_id": resource_id,
+        "details": details or {},
+        "ip_address": ip_address,
+        "criado_em": now(),
+    }
+    audit_logs.append(log)
+    return log
+
+def get_audit_logs(usuario_id: int | None = None, limit: int = 100) -> list[dict]:
+    logs = audit_logs
+    if usuario_id is not None:
+        logs = [log for log in logs if log["usuario_id"] == usuario_id]
+    return sorted(logs, key=lambda x: x["criado_em"], reverse=True)[:limit]
 
 # ── Dashboard Stats ──────────────────────────────────────────────────
 def get_dashboard_stats(usuario_id: int) -> dict:

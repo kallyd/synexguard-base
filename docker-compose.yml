@@ -5,15 +5,15 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-node_guardian}
-      POSTGRES_USER: ${POSTGRES_USER:-nodeguard}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nodeguard}
+      POSTGRES_USER: ${POSTGRES_USER:-synexguard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-synexguard}
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nodeguard}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-synexguard}"]
       interval: 10s
       timeout: 5s
       retries: 5

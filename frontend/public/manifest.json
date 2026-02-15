@@ -1,0 +1,67 @@
+{
+  "name": "SynexGuard Security Platform",
+  "short_name": "SynexGuard",
+  "description": "Plataforma de monitoramento e segurança de servidores em tempo real",
+  "theme_color": "#00d4ff",
+  "background_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/synex.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/synex.png",
+      "sizes": "192x192", 
+      "type": "image/png"
+    },
+    {
+      "src": "/synex.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Acessar o painel principal",
+      "url": "/",
+      "icons": [{ "src": "/synex.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Servidores",
+      "short_name": "Servidores",
+      "description": "Monitorar servidores",
+      "url": "/servers",
+      "icons": [{ "src": "/synex.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Alertas",
+      "short_name": "Alertas",
+      "description": "Ver alertas críticos",
+      "url": "/alerts",
+      "icons": [{ "src": "/synex.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["utilities", "productivity", "security"],
+  "screenshots": [
+    {
+      "src": "/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/screenshot-narrow.png", 
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}

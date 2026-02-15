@@ -2,7 +2,7 @@ import logging
 
 from app.core.config import settings
 
-logger = logging.getLogger("nodeguardian.notifiers")
+logger = logging.getLogger("synexguard.notifiers")
 
 
 def notify_discord(message: str) -> None:
